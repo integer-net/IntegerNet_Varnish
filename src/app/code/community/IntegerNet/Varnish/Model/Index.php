@@ -65,7 +65,7 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
 
             foreach ($urlCollection as $urlItem) {
 
-                $url = Mage::app()->getStore($urlItem->getData('store_id'))->getUrl() . $urlItem->getData('request_path');
+                $url = Mage::app()->getStore($urlItem->getData('store_id'))->getBaseUrl() . $urlItem->getData('request_path');
                 $key = md5($url);
 
                 $indexUrls[$key] = array(
