@@ -20,6 +20,21 @@ class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_C
      */
     public function clean()
     {
+        $purged = array();
 
+        /** @var $store Mage_Core_Model_Store */
+        foreach(Mage::app()->getStores() as $store) {
+
+            $url = $store->getBaseUrl();
+
+            if(!in_array($url, $purged)) {
+
+                $clint = new Zend_Http_Client(sprintf('%s*', $url));
+                $clint->setMethod('PURGE');
+                $clint->request();
+
+                $purged[] = $url;
+            }
+        }
     }
 }
