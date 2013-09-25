@@ -16,8 +16,12 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     /**
      * Pathes to external cache config options
      */
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_ACTION = 'system/external_page_cache/integernet_varnish_action';
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_DEBUG = 'system/external_page_cache/integernet_varnish_debug';
+    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_ACTION = 'system/external_page_cache/integernet_varnish_action';
+    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED = 'system/external_page_cache/integernet_varnish_invalidate_disqualified';
+    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS = 'system/external_page_cache/integernet_varnish_invalidate_bypass';
+
+
     const XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
 
     /**
@@ -102,13 +106,46 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     }
 
     /**
+     * @return bool
+     */
+    public function isModuleRoute()
+    {
+        return $this->_getRequest()->getRequestedRouteName() == 'integernet_varnish';
+    }
+
+    /**
      * @return array
      */
-    public function isInvalidate()
+    public function isDisqualified()
     {
+        $disqualifiedConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED));
+        Mage::log($disqualifiedConfig);
+
         $invalidateList = array();
         foreach ($this->getInvalidateModels() as $invalidate) {
-            if ($invalidate->hasData()) {
+            if (in_array($invalidate->getCode(), $disqualifiedConfig) && $invalidate->hasData()) {
+                if ($this->isDebug()) {
+                    $invalidateList[] = $invalidate->getCode();
+                } else {
+                    return array(true);
+                }
+            }
+        }
+
+        return $invalidateList;
+    }
+
+    /**
+     * @return array
+     */
+    public function isBypass()
+    {
+        $bypassConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS));
+        Mage::log($bypassConfig);
+
+        $invalidateList = array();
+        foreach ($this->getInvalidateModels() as $invalidate) {
+            if (in_array($invalidate->getCode(), $bypassConfig) && $invalidate->hasData()) {
                 if ($this->isDebug()) {
                     $invalidateList[] = $invalidate->getCode();
                 } else {

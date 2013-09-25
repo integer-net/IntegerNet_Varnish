@@ -46,9 +46,7 @@ IntegerNetVarnish.prototype = {
      */
     _updateData: function (respose) {
         if(respose.status == 200) {
-            if(respose.responseJSON.blocks) {
-                this.blocks = respose.responseJSON.blocks;
-            }
+            this.blocks = respose.responseJSON.blocks;
         }
     },
 

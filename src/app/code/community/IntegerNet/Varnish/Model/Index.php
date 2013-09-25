@@ -86,19 +86,12 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
     /**
      * add urls by request for purge control
      *
-     * @param Mage_Core_Controller_Request_Http $request
      * @param $lifetime
      * @return $this
      */
-    public function addUrlByRequest(Mage_Core_Controller_Request_Http $request, $lifetime)
+    public function addUrl($lifetime)
     {
-        $httpHelper = Mage::helper('core/http');
-
-        $secure = Mage::app()->getStore()->isCurrentlySecure() ? 's' : '';
-        $host = $httpHelper->getHttpHost(true);
-        $path = $request->getRequestString();
-
-        $url = sprintf('http%s://%s%s', $secure, $host, $path);
+        $url = Mage::helper('core/url')->getCurrentUrl();
         $key = md5($url);
 
         $indexUrls = array();

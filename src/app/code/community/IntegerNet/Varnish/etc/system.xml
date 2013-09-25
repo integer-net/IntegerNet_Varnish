@@ -19,16 +19,48 @@
             <groups>
                 <external_page_cache>
                     <fields>
-                        <integernet_varnish_action translate="label comment">
-                            <label>Cache Actions</label>
-                            <frontend_model>integernet_varnish/system_config_form_field_action</frontend_model>
-                            <backend_model>integernet_varnish/system_config_backend_action</backend_model>
+                        <integernet_varnish_debug translate="label comment">
+                            <label>Enable Response Header Debug Output</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                             <depends><control>integernet_varnish</control></depends>
+                        </integernet_varnish_debug>
+                        <integernet_varnish_action translate="label comment">
+                            <label>Cache Actions</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_action</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_action</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><control>integernet_varnish</control></depends>
                         </integernet_varnish_action>
+                        <integernet_varnish_invalidate_disqualified translate="label comment">
+                            <label>Disqualify Response from Cache</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>integernet_varnish/system_config_source_invalidate</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                            <depends><control>integernet_varnish</control></depends>
+                        </integernet_varnish_invalidate_disqualified>
+                        <integernet_varnish_invalidate_bypass translate="label comment">
+                            <label>Cache Bypass Request</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>integernet_varnish/system_config_source_invalidate</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                            <depends><control>integernet_varnish</control></depends>
+                        </integernet_varnish_invalidate_bypass>
                     </fields>
                 </external_page_cache>
             </groups>

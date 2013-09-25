@@ -54,6 +54,8 @@ class IntegerNet_Varnish_Model_Observer
     }
 
     /**
+     * Prevent set external_no_cache cookie by Mage_PageCache module.
+     *
      * @param Varien_Event_Observer $observer
      */
     public function controllerActionPredispatch(Varien_Event_Observer $observer)
@@ -61,41 +63,59 @@ class IntegerNet_Varnish_Model_Observer
         /** @var $helper IntegerNet_Varnish_Helper_Data */
         $helper = Mage::helper('integernet_varnish');
 
-        if ($helper->isEnabled()) {
-
-            /** @var $response Mage_Core_Controller_Response_Http */
-            $response = $observer->getControllerAction()->getResponse();
-
-            $lifetime = $helper->getLifetime();
-
-            if ($lifetime) {
-
-                $invalidate = $helper->isInvalidate();
-
-                if (count($invalidate) == 0) {
-
-                    if ($helper->hasNoCacheCookie()) {
-
-                        $helper->unsetNoCacheCookie();
-                        $helper->debug(false, 'unset external_no_cache');
-
-                    } else {
-                        $response->setHeader('aoestatic', 'cache', true);
-                        $response->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
-
-                        Mage::getModel('integernet_varnish/index')->addUrlByRequest($observer->getControllerAction()->getRequest(), $lifetime);
-
-                        $helper->debug(true, 'lifetime', $lifetime);
-                    }
-                } else {
-                    $helper->setNoCacheCookie();
-                    $helper->debug(false, 'invalidate', $invalidate);
-                }
-            } else {
-                $helper->debug(false, 'lifetime', 0);
-            }
-        } else {
+        if (!$helper->isEnabled()) {
             Mage::getSingleton('pagecache/observer')->processPreDispatch($observer);
+        }
+    }
+
+    /**
+     * @param Varien_Event_Observer $observer
+     */
+    public function controllerActionPostdispatch(Varien_Event_Observer $observer)
+    {
+        /** @var $helper IntegerNet_Varnish_Helper_Data */
+        $helper = Mage::helper('integernet_varnish');
+
+        /**
+         * isModuleRoute prevent execution if request processed by fetch
+         * controller.
+         */
+        if ($helper->isEnabled() && !$helper->isModuleRoute()) {
+
+            if ($bypass = $helper->isBypass()) {
+
+                //if(!$helper->hasNoCacheCookie()) {
+                //    Mage::app()->getResponse()->setRedirect(Mage::helper('core/url')->getCurrentUrl(), 200);
+                //}
+
+                $helper->setNoCacheCookie();
+                $helper->debug(false, 'external_no_cache', $bypass);
+
+            } elseif ($helper->hasNoCacheCookie()) {
+
+                $helper->unsetNoCacheCookie();
+                $helper->debug(false, 'external_no_cache', '-');
+
+            } else {
+
+                $disqualified = $helper->isDisqualified();
+                $lifetime = $helper->getLifetime();
+
+                if (!$disqualified && $lifetime) {
+
+                    Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
+                    Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
+
+                    Mage::getModel('integernet_varnish/index')->addUrl($lifetime);
+
+                    $helper->debug(true, 'lifetime', $lifetime);
+
+                } elseif($disqualified) {
+                    $helper->debug(false, 'disqualified', $disqualified);
+                } else {
+                    $helper->debug(true, 'lifetime', '0');
+                }
+            }
         }
     }
 }
