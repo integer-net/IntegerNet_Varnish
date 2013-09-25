@@ -119,7 +119,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     public function isDisqualified()
     {
         $disqualifiedConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED));
-        Mage::log($disqualifiedConfig);
 
         $invalidateList = array();
         foreach ($this->getInvalidateModels() as $invalidate) {
@@ -141,7 +140,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     public function isBypass()
     {
         $bypassConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS));
-        Mage::log($bypassConfig);
 
         $invalidateList = array();
         foreach ($this->getInvalidateModels() as $invalidate) {
