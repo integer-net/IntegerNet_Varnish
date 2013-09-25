@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * integer_net Magento Module
+ *
+ * @category IntegerNet
+ * @package IntegerNet_<Module>
+ * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
+ * @author Viktor Franz <vf@integer-net.de>
+ */
+
+/**
+ * Enter description here ...
+ */
+-->
+<layout version="0.1.0">
+
+    <integernetvarnish>
+
+        <reference name="head">
+            <action method="addJs"><script>integernet_varnish/script.js</script></action>
+        </reference>
+
+        <reference name="before_body_end">
+            <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml"></block>
+        </reference>
+
+        <varnishwrap name="top.links" id="varnishwrap_top_links"/>
+        <varnishwrap name="cart_sidebar" id="varnishwrap_cart_sidebar"/>
+        <varnishwrap name="right.reports.product.viewed" id="varnishwrap_product_viewed"/>
+        <varnishwrap name="right.reports.product.compared" id="varnishwrap_product_compared"/>
+        <varnishwrap name="catalog.compare.sidebar" id="varnishwrap_compare_sidebar"/>
+        <varnishwrap name="global_messages" id="varnishwrap_global_messages"/>
+        <varnishwrap name="messages" id="varnishwrap_messages"/>
+        <varnishwrap name="right.poll" id="varnishwrap_right_poll" />
+
+    </integernetvarnish>
+
+    <catalog_product_view>
+        <reference name="content">
+
+            <action method="unsetChild">
+                <name>external.pagecache.cookie</name>
+            </action>
+
+            <block type="integernet_varnish/cookie" name="integernet_varnish.external.pagecache.cookie" template="pagecache/cookie.phtml"/>
+        </reference>
+    </catalog_product_view>
+</layout>

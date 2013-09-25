@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * integer_net Magento Module
+ *
+ * @category IntegerNet
+ * @package IntegerNet_<Module>
+ * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
+ * @author Viktor Franz <vf@integer-net.de>
+ */
+
+/**
+ * Enter description here ...
+ */
+-->
+<config>
+    <modules>
+        <IntegerNet_Varnish>
+            <version>1.0.0.0</version>
+        </IntegerNet_Varnish>
+    </modules>
+    <global>
+        <helpers>
+            <integernet_varnish>
+                <class>IntegerNet_Varnish_Helper</class>
+            </integernet_varnish>
+        </helpers>
+        <blocks>
+            <integernet_varnish>
+                <class>IntegerNet_Varnish_Block</class>
+            </integernet_varnish>
+        </blocks>
+        <models>
+            <integernet_varnish>
+                <class>IntegerNet_Varnish_Model</class>
+                <resourceModel>integernet_varnish_resource</resourceModel>
+            </integernet_varnish>
+            <integernet_varnish_resource>
+                <class>IntegerNet_Varnish_Model_Resource</class>
+                <entities>
+                    <index>
+                        <table>integernet_varnish_index</table>
+                    </index>
+                </entities>
+            </integernet_varnish_resource>
+        </models>
+        <resources>
+            <integernet_varnish_setup>
+                <setup>
+                    <module>IntegerNet_Varnish</module>
+                    <class>Mage_Core_Model_Resource_Setup</class>
+                </setup>
+            </integernet_varnish_setup>
+        </resources>
+        <events>
+            <catalog_product_save_after>
+                <observers>
+                    <integernet_varnish>
+                        <class>integernet_varnish/observer</class>
+                        <method>catalogProductSaveAfter</method>
+                    </integernet_varnish>
+                </observers>
+            </catalog_product_save_after>
+            <cataloginventory_stock_item_save_after>
+                <observers>
+                    <integernet_varnish>
+                        <class>integernet_varnish/observer</class>
+                        <method>cataloginventoryStockItemSaveAfter</method>
+                    </integernet_varnish>
+                </observers>
+            </cataloginventory_stock_item_save_after>
+        </events>
+        <external_cache>
+            <controls>
+                <integernet_varnish translate="label" module="integernet_varnish">
+                    <label>Varnish (IntegerNet_Varnish)</label>
+                    <class>integernet_varnish/control_varnish</class>
+                </integernet_varnish>
+            </controls>
+        </external_cache>
+        <integernet_varnish>
+            <invalidate>
+                <checkout>integernet_varnish/invalidate_checkout</checkout>
+                <compare>integernet_varnish/invalidate_compare</compare>
+                <currency>integernet_varnish/invalidate_currency</currency>
+                <customer>integernet_varnish/invalidate_customer</customer>
+                <poll>integernet_varnish/invalidate_poll</poll>
+                <recently_compared>integernet_varnish/invalidate_recentlyCompared</recently_compared>
+                <recently_viewed>integernet_varnish/invalidate_recentlyViewed</recently_viewed>
+                <store>integernet_varnish/invalidate_store</store>
+            </invalidate>
+        </integernet_varnish>
+    </global>
+    <frontend>
+        <layout>
+            <updates>
+                <integernet_varnish>
+                    <file>integernet_varnish.xml</file>
+                </integernet_varnish>
+            </updates>
+        </layout>
+        <routers>
+            <integernet_varnish>
+                <use>standard</use>
+                <args>
+                    <module>IntegerNet_Varnish</module>
+                    <frontName>integernetvarnish</frontName>
+                </args>
+            </integernet_varnish>
+        </routers>
+        <events>
+            <controller_action_predispatch>
+                <observers>
+                    <pagecache>
+                        <class>integernet_varnish/observer</class>
+                        <method>controllerActionPredispatch</method>
+                    </pagecache>
+                </observers>
+            </controller_action_predispatch>
+            <controller_action_layout_load_before>
+                <observers>
+                    <integernet_varnish>
+                        <class>integernet_varnish/observer</class>
+                        <method>controllerActionLayoutLoadBefore</method>
+                    </integernet_varnish>
+                </observers>
+            </controller_action_layout_load_before>
+            <core_block_abstract_to_html_before>
+                <observers>
+                    <integernet_varnish>
+                        <class>integernet_varnish/observer</class>
+                        <method>coreBlockAbstractToHtmlBefore</method>
+                    </integernet_varnish>
+                </observers>
+            </core_block_abstract_to_html_before>
+        </events>
+    </frontend>
+    <default>
+        <system>
+            <external_page_cache>
+                <integernet_varnish_action>a:4:{s:18:"_1380016309113_113";a:2:{s:6:"action";s:15:"cms_index_index";s:8:"lifetime";s:5:"86400";}s:18:"_1380016311465_465";a:2:{s:6:"action";s:13:"cms_page_view";s:8:"lifetime";s:5:"86400";}s:18:"_1380016312112_112";a:2:{s:6:"action";s:20:"catalog_product_view";s:8:"lifetime";s:5:"86400";}s:18:"_1380016312672_672";a:2:{s:6:"action";s:21:"catalog_category_view";s:8:"lifetime";s:5:"86400";}}</integernet_varnish_action>
+                <integernet_varnish_debug>1</integernet_varnish_debug>
+            </external_page_cache>
+        </system>
+    </default>
+</config>
