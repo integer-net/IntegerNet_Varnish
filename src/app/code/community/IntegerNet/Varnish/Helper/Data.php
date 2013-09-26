@@ -21,34 +21,36 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED = 'system/external_page_cache/integernet_varnish_invalidate_disqualified';
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS = 'system/external_page_cache/integernet_varnish_invalidate_bypass';
 
-
+    /**
+     *
+     */
     const XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
 
     /**
      * @var null
      */
-    static private $_isEnabled = null;
+    protected $_isEnabled = null;
 
     /**
      * @var null
      */
-    static private $_wrapBlock = null;
+    protected $_wrapBlock = null;
 
     /**
      * @var null
      */
-    static private $_invalidateModels = null;
+    protected $_invalidateModels = null;
 
     /**
      * @return bool
      */
     public function isEnabled()
     {
-        if (self::$_isEnabled === null) {
-            self::$_isEnabled = parent::isEnabled() && parent::getCacheControlInstance() instanceof IntegerNet_Varnish_Model_Control_Varnish;
+        if ($this->_isEnabled === null) {
+            $this->_isEnabled = parent::isEnabled() && parent::getCacheControlInstance() instanceof IntegerNet_Varnish_Model_Control_Varnish;
         }
 
-        return self::$_isEnabled;
+        return $this->_isEnabled;
     }
 
     /**
@@ -160,19 +162,19 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function getInvalidateModels()
     {
-        if (self::$_invalidateModels === null) {
-            self::$_invalidateModels = array();
+        if ($this->_invalidateModels === null) {
+            $this->_invalidateModels = array();
             $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE);
 
             foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
                 $model = Mage::getSingleton($class);
                 if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Interface) {
-                    self::$_invalidateModels[$key] = $model;
+                    $this->_invalidateModels[$key] = $model;
                 }
             }
         }
 
-        return self::$_invalidateModels;
+        return $this->_invalidateModels;
     }
 
     /**
@@ -227,14 +229,28 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function getBlockWrapInfo()
     {
-        if (self::$_wrapBlock === null) {
-            self::$_wrapBlock = array();
-            foreach (Mage::app()->getLayout()->getXpath('//varnishwrap') as $node) {
-                self::$_wrapBlock[$node->getAttribute('name')] = $node->getAttribute('id');
+        if ($this->_wrapBlock === null) {
+
+            $this->_wrapBlock = array();
+            $varnishWrap = Mage::app()->getLayout()->getXpath('//varnishwrap');
+
+            if (is_array($varnishWrap)) {
+                foreach ($varnishWrap as $node) {
+                    $this->_wrapBlock[$node->getAttribute('name')] = $node->getAttribute('name');
+                }
             }
         }
 
-        return self::$_wrapBlock;
+        return $this->_wrapBlock;
+    }
+
+    /**
+     * @param $blockNameInLayout
+     * @return string
+     */
+    public function getWrapId($blockNameInLayout)
+    {
+        return sprintf('varnishwrap_%s', $blockNameInLayout);
     }
 
     /**
@@ -246,7 +262,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
         $blockWrapInfo = $this->getBlockWrapInfo();
 
         if (array_key_exists($block->getNameInLayout(), $blockWrapInfo)) {
-            $tagOpen = sprintf('div id="%s"', $blockWrapInfo[$block->getNameInLayout()]);
+            $tagOpen = sprintf('div id="%s"', $this->getWrapId($block->getNameInLayout()));
             $block->setFrameTags($tagOpen, '/div');
         }
 

@@ -31,13 +31,22 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
      */
     protected function _blocks()
     {
-        $blocks = array();
         $this->loadLayout();
 
-        foreach (Mage::helper('integernet_varnish')->getBlockWrapInfo() as $name => $id) {
+        $this->_initLayoutMessages('customer/session');
+        $this->_initLayoutMessages('catalog/session');
+        $this->_initLayoutMessages('review/session');
+        $this->_initLayoutMessages('tag/session');
+        $this->_initLayoutMessages('checkout/session');
+        $this->_initLayoutMessages('wishlist/session');
+        $this->_initLayoutMessages('paypal/session');
+
+        $blocks = array();
+
+        foreach (Mage::helper('integernet_varnish')->getBlockWrapInfo() as $name) {
             $block = $this->getLayout()->getBlock($name);
             if ($block) {
-                $blocks[$id] = $block->toHtml();
+                $blocks[Mage::helper('integernet_varnish')->getWrapId($name)] = $block->toHtml();
             }
         }
 
