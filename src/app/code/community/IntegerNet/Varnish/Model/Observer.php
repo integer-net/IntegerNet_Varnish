@@ -60,10 +60,7 @@ class IntegerNet_Varnish_Model_Observer
      */
     public function controllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        /** @var $helper IntegerNet_Varnish_Helper_Data */
-        $helper = Mage::helper('integernet_varnish');
-
-        if (!$helper->isEnabled()) {
+        if (!Mage::helper('integernet_varnish')->isEnabled()) {
             Mage::getSingleton('pagecache/observer')->processPreDispatch($observer);
         }
     }
