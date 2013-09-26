@@ -14,7 +14,7 @@
 class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_Control_Interface
 {
     /**
-     * Clean zend server page cache
+     * Clean varnish cache
      *
      * @return void
      */
@@ -25,15 +25,28 @@ class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_C
         /** @var $store Mage_Core_Model_Store */
         foreach(Mage::app()->getStores() as $store) {
 
-            $url = $store->getBaseUrl();
+            $uri = $store->getBaseUrl();
+            $uri = Zend_Uri::factory($uri);
+            $host =  $uri->getHost();
 
-            if(!in_array($url, $purged)) {
+            // If the port is not default, add it
+            if (! (($uri->getScheme() == 'http' && $uri->getPort() == 80) ||
+                ($uri->getScheme() == 'https' && $uri->getPort() == 443))) {
+                $host .= ':' . $uri->getPort();
+            }
 
-                $clint = new Zend_Http_Client(sprintf('%s*', $url));
+            if(!in_array($host, $purged)) {
+                $purged[] = $host;
+
+                $clint = new Zend_Http_Client('http://127.0.0.1/*');
+                $clint->setHeaders('Host', $host);
                 $clint->setMethod('PURGE');
-                $clint->request();
 
-                $purged[] = $url;
+                /** @var $response Zend_Http_Response */
+                $response = $clint->request();
+
+                $message = Mage::helper('integernet_varnish')->__('Varnish PURGE Response for %s <i>%s (%s)</i>', $host, $response->getMessage(), $response->getStatus());
+                Mage::getSingleton('adminhtml/session')->addNotice($message);
             }
         }
     }
