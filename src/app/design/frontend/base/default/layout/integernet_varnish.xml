@@ -25,14 +25,14 @@
             <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml"></block>
         </reference>
 
-        <varnishwrap name="top.links" id="varnishwrap_top_links"/>
-        <varnishwrap name="cart_sidebar" id="varnishwrap_cart_sidebar"/>
-        <varnishwrap name="right.reports.product.viewed" id="varnishwrap_product_viewed"/>
-        <varnishwrap name="right.reports.product.compared" id="varnishwrap_product_compared"/>
-        <varnishwrap name="catalog.compare.sidebar" id="varnishwrap_compare_sidebar"/>
-        <varnishwrap name="global_messages" id="varnishwrap_global_messages"/>
-        <varnishwrap name="messages" id="varnishwrap_messages"/>
-        <varnishwrap name="right.poll" id="varnishwrap_right_poll" />
+        <varnishwrap name="top.links"/>
+        <varnishwrap name="cart_sidebar"/>
+        <varnishwrap name="right.reports.product.viewed"/>
+        <varnishwrap name="right.reports.product.compared"/>
+        <varnishwrap name="catalog.compare.sidebar"/>
+        <varnishwrap name="global_messages"/>
+        <varnishwrap name="messages"/>
+        <varnishwrap name="right.poll"/>
 
     </integernetvarnish>
 
