@@ -61,6 +61,14 @@
                             <can_be_empty>1</can_be_empty>
                             <depends><control>integernet_varnish</control></depends>
                         </integernet_varnish_invalidate_bypass>
+                        <integernet_varnish_purge_uri translate="label comment">
+                            <label>Purge URI</label>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><control>integernet_varnish</control></depends>
+                        </integernet_varnish_purge_uri>
                     </fields>
                 </external_page_cache>
             </groups>

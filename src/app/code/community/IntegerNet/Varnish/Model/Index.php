@@ -126,4 +126,9 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
 
         return $this;
     }
+
+    public function setAllExpire()
+    {
+        $this->getResource()->setAllExpire();
+    }
 }

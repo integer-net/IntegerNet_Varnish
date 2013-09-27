@@ -20,6 +20,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_ACTION = 'system/external_page_cache/integernet_varnish_action';
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED = 'system/external_page_cache/integernet_varnish_invalidate_disqualified';
     const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS = 'system/external_page_cache/integernet_varnish_invalidate_bypass';
+    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_PURGE_URI = 'system/external_page_cache/integernet_varnish_purge_uri';
 
     /**
      *

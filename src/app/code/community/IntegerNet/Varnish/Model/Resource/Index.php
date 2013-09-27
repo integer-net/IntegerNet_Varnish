@@ -73,6 +73,20 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
     }
 
     /**
+     * @param $limit
+     * @return array
+     */
+    public function setAllExpire()
+    {
+        $select = $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('expire' => date('Y-m-d H:i:s'))
+        );
+
+        return $this;
+    }
+
+    /**
      * @param array $ids
      * @return $this
      */

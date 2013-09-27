@@ -168,6 +168,7 @@
                 <integernet_varnish_debug>1</integernet_varnish_debug>
                 <integernet_varnish_invalidate_disqualified>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</integernet_varnish_invalidate_disqualified>
                 <integernet_varnish_invalidate_bypass>currency,store</integernet_varnish_invalidate_bypass>
+                <integernet_varnish_purge_uri><![CDATA[http://127.0.0.1/*]]></integernet_varnish_purge_uri>
             </external_page_cache>
         </system>
     </default>
