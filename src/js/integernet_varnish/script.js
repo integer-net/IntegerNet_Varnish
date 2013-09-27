@@ -80,4 +80,4 @@ IntegerNetVarnish.prototype = {
             }
         }
     }
-}
+};
