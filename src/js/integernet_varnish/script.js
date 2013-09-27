@@ -22,6 +22,7 @@ IntegerNetVarnish.prototype = {
     initialize: function (fetchUrl) {
         this.fetchUrl = fetchUrl;
         this.blocks = {};
+        this.blockStorageKeyPrefix = 'integernetvarnish_block_';
 
         Event.observe(window, 'load', function () {
             this._updateBlocks();
@@ -46,7 +47,13 @@ IntegerNetVarnish.prototype = {
      */
     _updateData: function (respose) {
         if(respose.status == 200) {
-            this.blocks = respose.responseJSON.blocks;
+            if(window.sessionStorage) {
+                for(var key in respose.responseJSON.blocks) {
+                    window.sessionStorage.setItem(this.blockStorageKeyPrefix + key, respose.responseJSON.blocks[key]);
+                }
+            } else {
+                this.blocks = respose.responseJSON.blocks;
+            }
         }
     },
 
@@ -55,8 +62,22 @@ IntegerNetVarnish.prototype = {
      * @private
      */
     _updateBlocks: function () {
-        for(var id in this.blocks) {
-            $(id).replace(this.blocks[id]);
+        if(window.sessionStorage) {
+            for(var key in window.sessionStorage) {
+                if(key.match(this.blockStorageKeyPrefix)) {
+                    var element = $(key.replace(this.blockStorageKeyPrefix, ''));
+                    if(element) {
+                        element.replace(window.sessionStorage.getItem(key));
+                    }
+                }
+            }
+        } else {
+            for(var id in this.blocks) {
+                var element = $(id);
+                if(element) {
+                    element.replace(this.blocks[id]);
+                }
+            }
         }
     }
 }
