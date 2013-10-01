@@ -35,11 +35,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     /**
      * @var null
      */
-    protected $_wrapBlock = null;
-
-    /**
-     * @var null
-     */
     protected $_invalidateModels = null;
 
     /**
@@ -63,23 +58,20 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     }
 
     /**
-     * @param null $state
      * @param null $message
      * @param null $additional
      * @return $this
      */
-    public function debug($state = null, $message = null, $additional = null)
+    public function debug($message = null, $additional = null)
     {
-        if ($this->isDebug() && ($state === false || $state === true)) {
-            $state = $state ? 'true' : 'false';
+        if ($this->isDebug()) {
 
             if ($additional) {
                 $additional = is_array($additional) ? implode(',', $additional) : (string)$additional;
                 $message = sprintf('%s (%s)', $message, $additional);
             }
 
-            Mage::app()->getResponse()->setHeader('X-Magento-FPC-State', $state, true);
-            Mage::app()->getResponse()->setHeader('X-Magento-FPC-Message', $message, true);
+            Mage::app()->getResponse()->setHeader('X-Magento-FPC', $message, true);
 
         }
 
@@ -226,26 +218,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     }
 
     /**
-     * @return array|null
-     */
-    public function getBlockWrapInfo()
-    {
-        if ($this->_wrapBlock === null) {
-
-            $this->_wrapBlock = array();
-            $varnishWrap = Mage::app()->getLayout()->getXpath('//varnishwrap');
-
-            if (is_array($varnishWrap)) {
-                foreach ($varnishWrap as $node) {
-                    $this->_wrapBlock[$node->getAttribute('name')] = $node->getAttribute('name');
-                }
-            }
-        }
-
-        return $this->_wrapBlock;
-    }
-
-    /**
      * @param $blockNameInLayout
      * @return string
      */
@@ -260,7 +232,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function wrapBlock(Mage_Core_Block_Abstract $block)
     {
-        $blockWrapInfo = $this->getBlockWrapInfo();
+        $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
 
         if (array_key_exists($block->getNameInLayout(), $blockWrapInfo)) {
             $tagOpen = sprintf('div id="%s"', $this->getWrapId($block->getNameInLayout()));

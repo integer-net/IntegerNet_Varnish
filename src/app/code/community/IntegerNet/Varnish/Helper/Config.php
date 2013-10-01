@@ -28,12 +28,40 @@ class IntegerNet_Varnish_Helper_Config extends Mage_PageCache_Helper_Data
     const XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
 
     /**
+     * @var null
+     */
+    protected $_wrapBlockInfo = null;
+
+    /**
      * @param null $store
      * @return string
      */
     public function getPurgeUri($store = null)
     {
         return (string)Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_PURGE_URI, $store);
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getBlockWrapInfo()
+    {
+        if ($this->_wrapBlockInfo === null) {
+
+            $this->_wrapBlockInfo = array();
+            $varnishWrap = Mage::app()->getLayout()->getXpath('//varnishwrap');
+
+            if (is_array($varnishWrap)) {
+                foreach ($varnishWrap as $node) {
+                    $this->_wrapBlockInfo[$node->getAttribute('name')] = array(
+                        'name' => $node->getAttribute('name'),
+                        'nocache' => ($node->getAttribute('nocache') == 1) ? 1 : 0,
+                    );
+                }
+            }
+        }
+
+        return $this->_wrapBlockInfo;
     }
 }
 

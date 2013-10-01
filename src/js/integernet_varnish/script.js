@@ -49,7 +49,9 @@ IntegerNetVarnish.prototype = {
         if(respose.status == 200) {
             if(window.sessionStorage) {
                 for(var key in respose.responseJSON.blocks) {
-                    window.sessionStorage.setItem(this.blockStorageKeyPrefix + key, respose.responseJSON.blocks[key]);
+                    if(respose.responseJSON.blocks[key].nocache == 0) {
+                        window.sessionStorage.setItem(this.blockStorageKeyPrefix + key, respose.responseJSON.blocks[key].html);
+                    }
                 }
             } else {
                 this.blocks = respose.responseJSON.blocks;

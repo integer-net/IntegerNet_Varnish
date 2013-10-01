@@ -86,12 +86,12 @@ class IntegerNet_Varnish_Model_Observer
                 //}
 
                 $helper->setNoCacheCookie();
-                $helper->debug(false, 'external_no_cache', $bypass);
+                $helper->debug('external_no_cache', $bypass);
 
             } elseif ($helper->hasNoCacheCookie()) {
 
                 $helper->unsetNoCacheCookie();
-                $helper->debug(false, 'external_no_cache', '-');
+                $helper->debug('external_no_cache', '-');
 
             } else {
 
@@ -100,17 +100,18 @@ class IntegerNet_Varnish_Model_Observer
 
                 if (!$disqualified && $lifetime) {
 
+                    header_remove('Set-Cookie');
                     Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
                     Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
 
-                    Mage::getModel('integernet_varnish/index')->addUrl($lifetime);
+                    Mage::getModel('integernet_varnish/index')->addUrl($url = Mage::helper('core/url')->getCurrentUrl(), $lifetime);
 
-                    $helper->debug(true, 'lifetime', $lifetime);
+                    $helper->debug('lifetime', $lifetime);
 
                 } elseif($disqualified) {
-                    $helper->debug(false, 'disqualified', $disqualified);
+                    $helper->debug('disqualified', $disqualified);
                 } else {
-                    $helper->debug(true, 'lifetime', '0');
+                    $helper->debug('No-Cache');
                 }
             }
         }

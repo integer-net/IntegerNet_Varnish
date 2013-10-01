@@ -11,7 +11,7 @@ class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Mes
     {
         $html = parent::getGroupedHtml();
 
-        $blockWrapInfo = Mage::helper('integernet_varnish')->getBlockWrapInfo();
+        $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
         $nameInLayout = $this->getNameInLayout();
 
         if (array_key_exists($nameInLayout, $blockWrapInfo)) {
@@ -30,7 +30,7 @@ class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Mes
     {
         $html = parent::_toHtml();
 
-        $blockWrapInfo = Mage::helper('integernet_varnish')->getBlockWrapInfo();
+        $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
         $nameInLayout = $this->getNameInLayout();
 
         if (array_key_exists($nameInLayout, $blockWrapInfo)) {

@@ -43,10 +43,13 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
 
         $blocks = array();
 
-        foreach (Mage::helper('integernet_varnish')->getBlockWrapInfo() as $name) {
+        foreach (Mage::helper('integernet_varnish/config')->getBlockWrapInfo() as $name => $info) {
             $block = $this->getLayout()->getBlock($name);
             if ($block) {
-                $blocks[Mage::helper('integernet_varnish')->getWrapId($name)] = $block->toHtml();
+                $blocks[Mage::helper('integernet_varnish')->getWrapId($name)] = array(
+                    'html' => $block->toHtml(),
+                    'nocache' => $info['nocache'],
+                );
             }
         }
 

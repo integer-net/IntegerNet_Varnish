@@ -86,12 +86,12 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
     /**
      * add urls by request for purge control
      *
+     * @param $url
      * @param $lifetime
      * @return $this
      */
-    public function addUrl($lifetime)
+    public function addUrl($url, $lifetime)
     {
-        $url = Mage::helper('core/url')->getCurrentUrl();
         $key = md5($url);
 
         $indexUrls = array();
