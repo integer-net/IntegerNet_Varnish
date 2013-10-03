@@ -56,7 +56,7 @@ class IntegerNet_Varnish_Model_Build
             $runTimeCurrent = $timeStop - $timeStart;
             $runTime += $runTimeCurrent;
 
-            if(Mage::helper('integernet_varnish')->isDebug()) {
+            if(Mage::helper('integernet_varnish/config')->isDebugMode()) {
                 $label = $this->_getLogLabel($expiredUrlCount, $expiredUrlTotal, $runTimeCurrent, $response->getStatus(), $url);
                 Mage::log($label, null, 'integernet_varnish_build.log', true);
             }
@@ -68,7 +68,7 @@ class IntegerNet_Varnish_Model_Build
 
         $index->removeByIds($removerFromIndex);
 
-        if(Mage::helper('integernet_varnish')->isDebug()) {
+        if(Mage::helper('integernet_varnish/config')->isDebugMode()) {
             Mage::log('Finish', null, 'integernet_varnish_build.log', true);
         }
     }
