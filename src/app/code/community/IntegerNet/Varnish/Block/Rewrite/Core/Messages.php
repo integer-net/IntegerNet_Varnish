@@ -1,5 +1,16 @@
 <?php
+/**
+ * integer_net Magento Module
+ *
+ * @category IntegerNet
+ * @package IntegerNet_<Module>
+ * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
+ * @author Viktor Franz <vf@integer-net.de>
+ */
 
+/**
+ * Enter description here ...
+ */
 class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Messages
 {
     /**
@@ -11,11 +22,16 @@ class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Mes
     {
         $html = parent::getGroupedHtml();
 
-        $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
-        $nameInLayout = $this->getNameInLayout();
+        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
+        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
 
-        if (array_key_exists($nameInLayout, $blockWrapInfo)) {
-            $html = sprintf('<div id="%s">%s</div>', Mage::helper('integernet_varnish')->getWrapId($nameInLayout), $html);
+        if ($enable && $holePunching) {
+            $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
+            $nameInLayout = $this->getNameInLayout();
+
+            if (array_key_exists($nameInLayout, $blockWrapInfo)) {
+                $html = sprintf('<div id="%s">%s</div>', Mage::helper('integernet_varnish')->getWrapId($nameInLayout), $html);
+            }
         }
 
         return $html;
@@ -30,12 +46,17 @@ class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Mes
     {
         $html = parent::_toHtml();
 
-        $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
-        $nameInLayout = $this->getNameInLayout();
+        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
+        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
 
-        if (array_key_exists($nameInLayout, $blockWrapInfo)) {
-            if (strpos($html, Mage::helper('integernet_varnish')->getWrapId($nameInLayout)) !== false) {
-                $this->setFrameTags(null);
+        if ($enable && $holePunching) {
+            $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
+            $nameInLayout = $this->getNameInLayout();
+
+            if (array_key_exists($nameInLayout, $blockWrapInfo)) {
+                if (strpos($html, Mage::helper('integernet_varnish')->getWrapId($nameInLayout)) !== false) {
+                    $this->setFrameTags(null);
+                }
             }
         }
 

@@ -29,7 +29,11 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if (Mage::helper('integernet_varnish')->isEnabled() && Mage::helper('integernet_varnish')->getLifetime()) {
+        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
+        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
+        $lifetime = Mage::helper('integernet_varnish')->getLifetime();
+
+        if ($enable && $holePunching && $lifetime) {
             return parent::_toHtml();
         }
 

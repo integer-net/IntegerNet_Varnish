@@ -1,0 +1,29 @@
+<?php
+/**
+ * integer_net Magento Module
+ *
+ * @category IntegerNet
+ * @package IntegerNet_<Module>
+ * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
+ * @author Viktor Franz <vf@integer-net.de>
+ */
+
+/**
+ * Enter description here ...
+ */
+?>
+
+<?php /** @var $this IntegerNet_Varnish_Block_Adminhtml_Cache_Additional */ ?>
+
+<?php if ($this->canShowButton()): ?>
+<table class="form-list">
+    <tr>
+        <td class="scope-label">
+            <button onclick="setLocation('<?php echo $this->getFullPurgeUrl()?>')" type="button" class="scalable"><span><?php echo Mage::helper('integernet_varnish')->__('Flush Varnish Page Cache') ?></span></button>
+        </td>
+        <td class="scope-label">
+            <?php echo Mage::helper('integernet_varnish')->__('External varnish full page cache.')?>
+        </td>
+    </tr>
+</table>
+<?php endif;?>

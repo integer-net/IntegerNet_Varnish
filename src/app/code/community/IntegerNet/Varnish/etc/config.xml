@@ -75,14 +75,6 @@
                 </observers>
             </cataloginventory_stock_item_save_after>
         </events>
-        <external_cache>
-            <controls>
-                <integernet_varnish translate="label" module="integernet_varnish">
-                    <label>Varnish (IntegerNet_Varnish)</label>
-                    <class>integernet_varnish/control_varnish</class>
-                </integernet_varnish>
-            </controls>
-        </external_cache>
         <integernet_varnish>
             <invalidate>
                 <checkout>integernet_varnish/invalidate_checkout</checkout>
@@ -104,11 +96,31 @@
                     <cron_expr>*/10 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>integernet_varnish/build::warm</model>
+                    <model>integernet_varnish/build::build</model>
                 </run>
             </integernet_varnish_build>
         </jobs>
     </crontab>
+    <adminhtml>
+        <layout>
+            <updates>
+                <pagecache>
+                    <file>integernet_varnish.xml</file>
+                </pagecache>
+            </updates>
+        </layout>
+    </adminhtml>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <integernet_varnish before="Mage_Adminhtml">IntegerNet_Varnish_Adminhtml</integernet_varnish>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <frontend>
         <layout>
             <updates>
@@ -135,14 +147,6 @@
                     </pagecache>
                 </observers>
             </controller_action_predispatch>
-            <controller_action_postdispatch>
-                <observers>
-                    <pagecache>
-                        <class>integernet_varnish/observer</class>
-                        <method>controllerActionPostdispatch</method>
-                    </pagecache>
-                </observers>
-            </controller_action_postdispatch>
             <controller_action_layout_load_before>
                 <observers>
                     <integernet_varnish>
@@ -163,13 +167,16 @@
     </frontend>
     <default>
         <system>
-            <external_page_cache>
-                <integernet_varnish_action>a:4:{s:18:"_1380016309113_113";a:2:{s:6:"action";s:15:"cms_index_index";s:8:"lifetime";s:5:"86400";}s:18:"_1380016311465_465";a:2:{s:6:"action";s:13:"cms_page_view";s:8:"lifetime";s:5:"86400";}s:18:"_1380016312112_112";a:2:{s:6:"action";s:20:"catalog_product_view";s:8:"lifetime";s:5:"86400";}s:18:"_1380016312672_672";a:2:{s:6:"action";s:21:"catalog_category_view";s:8:"lifetime";s:5:"86400";}}</integernet_varnish_action>
-                <integernet_varnish_debug>1</integernet_varnish_debug>
-                <integernet_varnish_invalidate_disqualified>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</integernet_varnish_invalidate_disqualified>
-                <integernet_varnish_invalidate_bypass>currency,store</integernet_varnish_invalidate_bypass>
-                <integernet_varnish_purge_uri><![CDATA[http://127.0.0.1/*]]></integernet_varnish_purge_uri>
-            </external_page_cache>
+            <integernet_varnish>
+                <enable>1</enable>
+                <cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</cache_routes>
+                <hole_punching>1</hole_punching>
+                <disqualified_states>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</disqualified_states>
+                <disqualified_params>a:3:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}}</disqualified_params>
+                <bypass_states>currency,store</bypass_states>
+                <purge_server><![CDATA[127.0.0.1]]></purge_server>
+                <debug_mode>1</debug_mode>
+            </integernet_varnish>
         </system>
     </default>
 </config>

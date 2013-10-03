@@ -20,7 +20,7 @@ class IntegerNet_Varnish_Block_Cookie extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if(Mage::helper('integernet_varnish')->isEnabled()) {
+        if(Mage::helper('integernet_varnish/config')->isEnabled()) {
             return null;
         }
 

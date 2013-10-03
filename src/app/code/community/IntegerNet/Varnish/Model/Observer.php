@@ -18,7 +18,7 @@ class IntegerNet_Varnish_Model_Observer
      */
     public function catalogProductSaveAfter(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('integernet_varnish')->isEnabled()) {
+        if (Mage::helper('integernet_varnish/config')->isEnabled()) {
             Mage::getModel('integernet_varnish/index')->observerProductUrls($observer->getProduct());
         }
     }
@@ -28,7 +28,7 @@ class IntegerNet_Varnish_Model_Observer
      */
     public function cataloginventoryStockItemSaveAfter(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('integernet_varnish')->isEnabled()) {
+        if (Mage::helper('integernet_varnish/config')->isEnabled()) {
             Mage::getModel('integernet_varnish/index')->observerProductUrls($observer->getItem()->getProductId());
         }
     }
@@ -38,7 +38,10 @@ class IntegerNet_Varnish_Model_Observer
      */
     public function controllerActionLayoutLoadBefore(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('integernet_varnish')->isEnabled()) {
+        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
+        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
+
+        if ($enable && $holePunching) {
             Mage::helper('integernet_varnish')->addLayoutHandle();
         }
     }
@@ -48,36 +51,30 @@ class IntegerNet_Varnish_Model_Observer
      */
     public function coreBlockAbstractToHtmlBefore(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('integernet_varnish')->isEnabled()) {
+        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
+        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
+
+        if ($enable && $holePunching) {
             Mage::helper('integernet_varnish')->wrapBlock($observer->getData('block'));
         }
     }
 
     /**
-     * Prevent set external_no_cache cookie by Mage_PageCache module.
-     *
      * @param Varien_Event_Observer $observer
      */
     public function controllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        if (!Mage::helper('integernet_varnish')->isEnabled()) {
-            Mage::getSingleton('pagecache/observer')->processPreDispatch($observer);
-        }
-    }
-
-    /**
-     * @param Varien_Event_Observer $observer
-     */
-    public function controllerActionPostdispatch(Varien_Event_Observer $observer)
-    {
         /** @var $helper IntegerNet_Varnish_Helper_Data */
         $helper = Mage::helper('integernet_varnish');
+
+        /** @var $helperConfig IntegerNet_Varnish_Helper_Config */
+        $helperConfig = Mage::helper('integernet_varnish/config');
 
         /**
          * isModuleRoute prevent execution if request processed by fetch
          * controller.
          */
-        if ($helper->isEnabled() && !$helper->isModuleRoute()) {
+        if ($helperConfig->isEnabled() && !$helper->isModuleRoute() && Mage::app()->getResponse()->canSendHeaders()) {
 
             if ($bypass = $helper->isBypass()) {
 
@@ -91,7 +88,7 @@ class IntegerNet_Varnish_Model_Observer
             } elseif ($helper->hasNoCacheCookie()) {
 
                 $helper->unsetNoCacheCookie();
-                $helper->debug('external_no_cache', '-');
+                $helper->debug('external_no_cache', '0');
 
             } else {
 
@@ -100,20 +97,25 @@ class IntegerNet_Varnish_Model_Observer
 
                 if (!$disqualified && $lifetime) {
 
-                    header_remove('Set-Cookie');
+                    if (function_exists('header_remove')) {
+                        header_remove('Set-Cookie');
+                    }
+
                     Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
                     Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
 
-                    Mage::getModel('integernet_varnish/index')->addUrl($url = Mage::helper('core/url')->getCurrentUrl(), $lifetime);
+                    Mage::getModel('integernet_varnish/index')->addUrl(Mage::helper('core/url')->getCurrentUrl(), $lifetime);
 
                     $helper->debug('lifetime', $lifetime);
 
-                } elseif($disqualified) {
+                } elseif ($disqualified) {
                     $helper->debug('disqualified', $disqualified);
                 } else {
                     $helper->debug('No-Cache');
                 }
             }
+        } elseif (!$helperConfig->isEnabled()) {
+            Mage::getSingleton('pagecache/observer')->processPreDispatch($observer);
         }
     }
 }

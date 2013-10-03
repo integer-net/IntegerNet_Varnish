@@ -11,52 +11,8 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
+class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    /**
-     * Pathes to external cache config options
-     */
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_DEBUG = 'system/external_page_cache/integernet_varnish_debug';
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_ACTION = 'system/external_page_cache/integernet_varnish_action';
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED = 'system/external_page_cache/integernet_varnish_invalidate_disqualified';
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS = 'system/external_page_cache/integernet_varnish_invalidate_bypass';
-    const XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_PURGE_URI = 'system/external_page_cache/integernet_varnish_purge_uri';
-
-    /**
-     *
-     */
-    const XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
-
-    /**
-     * @var null
-     */
-    protected $_isEnabled = null;
-
-    /**
-     * @var null
-     */
-    protected $_invalidateModels = null;
-
-    /**
-     * @return bool
-     */
-    public function isEnabled()
-    {
-        if ($this->_isEnabled === null) {
-            $this->_isEnabled = parent::isEnabled() && parent::getCacheControlInstance() instanceof IntegerNet_Varnish_Model_Control_Varnish;
-        }
-
-        return $this->_isEnabled;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isDebug()
-    {
-        return (bool)Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_DEBUG);
-    }
-
     /**
      * @param null $message
      * @param null $additional
@@ -64,15 +20,14 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function debug($message = null, $additional = null)
     {
-        if ($this->isDebug()) {
+        if (Mage::helper('integernet_varnish/config')->isDebugMode() && Mage::app()->getResponse()->canSendHeaders()) {
 
             if ($additional) {
                 $additional = is_array($additional) ? implode(',', $additional) : (string)$additional;
                 $message = sprintf('%s (%s)', $message, $additional);
             }
 
-            Mage::app()->getResponse()->setHeader('X-Magento-FPC', $message, true);
-
+            Mage::app()->getResponse()->setHeader('X-Magento-Varnish', $message, true);
         }
 
         return $this;
@@ -83,17 +38,19 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function getLifetime()
     {
-        $actions = unserialize(Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_ACTION));
+        $cacheRoutes = Mage::helper('integernet_varnish/config')->getCacheRoutes();
 
-        $fullActionName = sprintf('%s_%s_%s',
-            $this->_getRequest()->getRequestedRouteName(),
-            $this->_getRequest()->getRequestedControllerName(),
-            $this->_getRequest()->getRequestedActionName()
-        );
+        $route = $this->_getRequest()->getRequestedRouteName();
+        $controller = $this->_getRequest()->getRequestedControllerName();
+        $action = $this->_getRequest()->getRequestedActionName();
 
-        foreach ($actions as $actions) {
-            if (strtolower(trim($actions['action'])) == $fullActionName) {
-                return (int)$actions['lifetime'];
+        foreach ($cacheRoutes as $cacheRoute) {
+            if($cacheRoute->getRoute() == $route) {
+                if($cacheRoute->getController() == $controller || $cacheRoute->getController() == '*') {
+                    if($cacheRoute->getAction() == $action || $cacheRoute->getAction() == '*') {
+                        return $cacheRoute->getLifetime();
+                    }
+                }
             }
         }
 
@@ -113,11 +70,25 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function isDisqualified()
     {
-        $disqualifiedConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_DISQUALIFIED));
+        $disqualifiedParams = Mage::helper('integernet_varnish/config')->getDisqualifiedParams();
+
+        foreach ($disqualifiedParams as $disqualifiedParam) {
+            if ($this->_getRequest()->getParam($disqualifiedParam)) {
+                $invalidateList[] = $disqualifiedParam;
+                if ($this->isDebug()) {
+                    $invalidateList[] = $disqualifiedParam;
+                } else {
+                    return array(true);
+                }
+            }
+        }
+
+        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateModels();
+        $disqualifiedStates = Mage::helper('integernet_varnish/config')->getDisqualifiedStates();
 
         $invalidateList = array();
-        foreach ($this->getInvalidateModels() as $invalidate) {
-            if (in_array($invalidate->getCode(), $disqualifiedConfig) && $invalidate->hasData()) {
+        foreach ($invalidateModels as $invalidate) {
+            if (in_array($invalidate->getCode(), $disqualifiedStates) && $invalidate->hasData()) {
                 if ($this->isDebug()) {
                     $invalidateList[] = $invalidate->getCode();
                 } else {
@@ -134,11 +105,12 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
      */
     public function isBypass()
     {
-        $bypassConfig = explode(',', Mage::getStoreConfig(self::XML_PATH_EXTERNAL_CACHE_INTEGERNET_VARNISH_INVALIDATE_BYPASS));
+        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateModels();
+        $bypassStates = Mage::helper('integernet_varnish/config')->getBypassStates();
 
         $invalidateList = array();
-        foreach ($this->getInvalidateModels() as $invalidate) {
-            if (in_array($invalidate->getCode(), $bypassConfig) && $invalidate->hasData()) {
+        foreach ($invalidateModels as $invalidate) {
+            if (in_array($invalidate->getCode(), $bypassStates) && $invalidate->hasData()) {
                 if ($this->isDebug()) {
                     $invalidateList[] = $invalidate->getCode();
                 } else {
@@ -151,42 +123,25 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     }
 
     /**
-     * @return IntegerNet_Varnish_Model_Invalidate_Interface[]
-     */
-    public function getInvalidateModels()
-    {
-        if ($this->_invalidateModels === null) {
-            $this->_invalidateModels = array();
-            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE);
-
-            foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
-                $model = Mage::getSingleton($class);
-                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Interface) {
-                    $this->_invalidateModels[$key] = $model;
-                }
-            }
-        }
-
-        return $this->_invalidateModels;
-    }
-
-    /**
      * Disable caching on external storage side by setting special cookie
      *
-     * @return void
+     * @return self
      */
     public function setNoCacheCookie()
     {
         Mage::helper('pagecache')->setNoCacheCookie();
+
+        return $this;
     }
 
     /**
      * Disable caching on external storage side by setting special cookie
      *
-     * @return void
+     * @return mixed
      */
     public function hasNoCacheCookie()
     {
+        /** @var $cookie Mage_Core_Model_Cookie */
         $cookie = Mage::getSingleton('core/cookie');
 
         return $cookie->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
@@ -195,10 +150,11 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
     /**
      * Disable caching on external storage side by setting special cookie
      *
-     * @return void
+     * @return self
      */
     public function unsetNoCacheCookie()
     {
+        /** @var $cookie Mage_Core_Model_Cookie */
         $cookie = Mage::getSingleton('core/cookie');
 
         $noCache = $cookie->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
@@ -206,29 +162,23 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
         if ($noCache) {
             $cookie->delete(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
         }
-    }
 
-    /**
-     * @return $this
-     */
-    public function addLayoutHandle()
-    {
-        Mage::app()->getLayout()->getUpdate()->addHandle('integernetvarnish');
         return $this;
     }
 
     /**
-     * @param $blockNameInLayout
-     * @return string
+     * @return self
      */
-    public function getWrapId($blockNameInLayout)
+    public function addLayoutHandle()
     {
-        return sprintf('varnishwrap_%s', $blockNameInLayout);
+        Mage::app()->getLayout()->getUpdate()->addHandle('integernetvarnish');
+
+        return $this;
     }
 
     /**
      * @param Mage_Core_Block_Abstract $block
-     * @return $this
+     * @return self
      */
     public function wrapBlock(Mage_Core_Block_Abstract $block)
     {
@@ -241,6 +191,13 @@ class IntegerNet_Varnish_Helper_Data extends Mage_PageCache_Helper_Data
 
         return $this;
     }
+
+    /**
+     * @param $blockNameInLayout
+     * @return string
+     */
+    public function getWrapId($blockNameInLayout)
+    {
+        return sprintf('varnishwrap_%s', $blockNameInLayout);
+    }
 }
-
-

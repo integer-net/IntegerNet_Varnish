@@ -11,14 +11,14 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_Control_Interface
+class IntegerNet_Varnish_Model_Purge
 {
     /**
      * Clean varnish cache
      *
      * @return void
      */
-    public function clean()
+    public function fullPurge()
     {
         $purged = array();
 
@@ -32,7 +32,12 @@ class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_C
             if(!in_array($host, $purged)) {
                 $purged[] = $host;
 
-                $clint = new Zend_Http_Client(Mage::helper('integernet_varnish/config')->getPurgeUri($store->getId()));
+                /** @var $uri Zend_Uri_Http */
+                $uri = Zend_Uri_Http::factory();
+                $uri->setHost(Mage::helper('integernet_varnish/config')->getPurgeServer($store->getId()));
+                $uri->setPath('/*');
+
+                $clint = new Zend_Http_Client($uri);
                 $clint->setHeaders('Host', $host);
                 $clint->setMethod('PURGE');
 

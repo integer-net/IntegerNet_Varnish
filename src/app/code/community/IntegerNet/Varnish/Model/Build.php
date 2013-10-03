@@ -18,9 +18,9 @@ class IntegerNet_Varnish_Model_Build
     /**
      *
      */
-    public function warm()
+    public function build()
     {
-        if(Mage::helper('integernet_varnish')->isDebug()) {
+        if(Mage::helper('integernet_varnish/config')->isDebugMode()) {
             Mage::log('Start', null, 'integernet_varnish_build.log', true);
         }
 

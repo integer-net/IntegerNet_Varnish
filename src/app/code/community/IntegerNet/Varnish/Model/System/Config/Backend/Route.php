@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_System_Config_Backend_Action extends Mage_Adminhtml_Model_System_Config_Backend_Serialized_Array
+class IntegerNet_Varnish_Model_System_Config_Backend_Route extends Mage_Adminhtml_Model_System_Config_Backend_Serialized_Array
 {
-    protected $_eventPrefix = 'integernet_varnish_system_config_backend_action';
+    protected $_eventPrefix = 'integernet_varnish_system_config_backend_route';
 }
