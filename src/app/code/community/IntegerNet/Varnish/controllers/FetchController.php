@@ -18,9 +18,11 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
      */
     public function indexAction()
     {
-        $response = array(
-            'blocks' => $this->_blocks(),
-        );
+        $response = array();
+
+        $blocks = $this->_blocks();
+
+        $response = array_merge($response, $blocks);
 
         $this->getResponse()->setHeader('Content-Type', 'application/json');
         $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
@@ -41,18 +43,26 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
         $this->_initLayoutMessages('wishlist/session');
         $this->_initLayoutMessages('paypal/session');
 
-        $blocks = array();
+        $liveBlocks = array();
+        $storageBlocks = array();
 
         foreach (Mage::helper('integernet_varnish/config')->getBlockWrapInfo() as $name => $info) {
             $block = $this->getLayout()->getBlock($name);
             if ($block) {
-                $blocks[Mage::helper('integernet_varnish')->getWrapId($name)] = array(
-                    'html' => $block->toHtml(),
-                    'nocache' => $info['nocache'],
-                );
+                $blockHtml = $block->toHtml();
+                $blockWrapId = Mage::helper('integernet_varnish')->getWrapId($name);
+
+                $liveBlocks[$blockWrapId] = $blockHtml;
+
+                if(!$info['nocache']) {
+                    $storageBlocks[$blockWrapId] = $blockHtml;
+                }
             }
         }
 
-        return $blocks;
+        return array(
+            'blocks' => $liveBlocks,
+            'storage' => Mage::helper('core')->jsonEncode($storageBlocks),
+        );
     }
 }

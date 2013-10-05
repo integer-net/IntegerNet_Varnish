@@ -70,12 +70,14 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isDisqualified()
     {
+        $invalidateList = array();
+
         $disqualifiedParams = Mage::helper('integernet_varnish/config')->getDisqualifiedParams();
 
+
         foreach ($disqualifiedParams as $disqualifiedParam) {
-            if ($this->_getRequest()->getParam($disqualifiedParam)) {
-                $invalidateList[] = $disqualifiedParam;
-                if ($this->isDebug()) {
+            if ($this->_getRequest()->has($disqualifiedParam)) {
+                if (Mage::helper('integernet_varnish/config')->isDebugMode()) {
                     $invalidateList[] = $disqualifiedParam;
                 } else {
                     return array(true);
@@ -86,10 +88,9 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
         $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateModels();
         $disqualifiedStates = Mage::helper('integernet_varnish/config')->getDisqualifiedStates();
 
-        $invalidateList = array();
         foreach ($invalidateModels as $invalidate) {
             if (in_array($invalidate->getCode(), $disqualifiedStates) && $invalidate->hasData()) {
-                if ($this->isDebug()) {
+                if (Mage::helper('integernet_varnish/config')->isDebugMode()) {
                     $invalidateList[] = $invalidate->getCode();
                 } else {
                     return array(true);
@@ -111,7 +112,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
         $invalidateList = array();
         foreach ($invalidateModels as $invalidate) {
             if (in_array($invalidate->getCode(), $bypassStates) && $invalidate->hasData()) {
-                if ($this->isDebug()) {
+                if (Mage::helper('integernet_varnish/config')->isDebugMode()) {
                     $invalidateList[] = $invalidate->getCode();
                 } else {
                     return array(true);

@@ -91,16 +91,12 @@ class IntegerNet_Varnish_Model_Observer
                 $helper->debug('external_no_cache', '0');
 
             } else {
-
                 $disqualified = $helper->isDisqualified();
                 $lifetime = $helper->getLifetime();
 
-                if (!$disqualified && $lifetime) {
+                if (Mage::app()->getRequest()->isGet() && !$disqualified && $lifetime) {
 
-                    if (function_exists('header_remove')) {
-                        header_remove('Set-Cookie');
-                    }
-
+                    header('Set-Cookie:'); // Unset Set-Cookie header
                     Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
                     Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
 
