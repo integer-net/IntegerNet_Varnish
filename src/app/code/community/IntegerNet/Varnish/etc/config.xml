@@ -172,7 +172,7 @@
                 <cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</cache_routes>
                 <hole_punching>1</hole_punching>
                 <disqualified_states>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</disqualified_states>
-                <disqualified_params>a:3:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}}</disqualified_params>
+                <disqualified_params>a:4:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}s:18:"_1381329617433_433";a:1:{s:5:"param";s:5:"gclid";}}</disqualified_params>
                 <bypass_states>currency,store</bypass_states>
                 <purge_server><![CDATA[127.0.0.1]]></purge_server>
                 <debug_mode>1</debug_mode>

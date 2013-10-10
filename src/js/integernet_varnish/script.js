@@ -36,6 +36,7 @@ IntegerNetVarnish.prototype = {
      */
     _fetchBlocks: function () {
         new Ajax.Request(this.fetchUrl, {
+            parameters: {pathname : window.location.pathname},
             onSuccess: this._updateData.bind(this),
             onComplete: this._updateBlocks.bind(this)
         });

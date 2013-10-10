@@ -18,6 +18,13 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
      */
     public function indexAction()
     {
+        /**
+         * @see Mage_Core_Helper_Url::getCurrentUrl
+         */
+        if($this->getRequest()->getParam('pathname')) {
+            $_SERVER['REQUEST_URI'] = $this->getRequest()->getParam('pathname');
+        }
+
         $response = array();
 
         $blocks = $this->_blocks();
@@ -33,6 +40,8 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
      */
     protected function _blocks()
     {
+        Mage::app()->setUseSessionInUrl(false);
+
         $this->loadLayout();
 
         $this->_initLayoutMessages('customer/session');
@@ -47,6 +56,8 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
         $storageBlocks = array();
 
         foreach (Mage::helper('integernet_varnish/config')->getBlockWrapInfo() as $name => $info) {
+
+            /** @var $block Mage_Core_Block_Abstract */
             $block = $this->getLayout()->getBlock($name);
             if ($block) {
                 $blockHtml = $block->toHtml();
