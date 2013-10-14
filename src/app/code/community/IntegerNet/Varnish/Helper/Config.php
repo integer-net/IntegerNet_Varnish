@@ -20,6 +20,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_ENABLE = 'system/integernet_varnish/enable';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_CACHE_ROUTES = 'system/integernet_varnish/cache_routes';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_PUNCHING = 'system/integernet_varnish/hole_punching';
+    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_BLOCKS = 'system/integernet_varnish/hole_blocks';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_STATES = 'system/integernet_varnish/disqualified_states';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS = 'system/integernet_varnish/disqualified_params';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_BYPASS_STATES = 'system/integernet_varnish/bypass_states';
@@ -142,27 +143,26 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return array
+     * @param null $store
+     * @return mixed
      */
-    public function getBlockWrapInfo()
+    public function getBlockWrapInfo($store = null)
     {
-        if (!array_key_exists(__METHOD__, $this->_objectCache)) {
+        if (!array_key_exists(__METHOD__ . $store, $this->_objectCache)) {
 
-            $wrapBlockInfo = array();
-            $varnishWrap = Mage::app()->getLayout()->getXpath('//varnishwrap');
+            $wrapInfo = array();
+            $blocksConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_BLOCKS, $store));
 
-            if (is_array($varnishWrap)) {
-                foreach ($varnishWrap as $node) {
-                    $wrapBlockInfo[$node->getAttribute('name')] = array(
-                        'name' => $node->getAttribute('name'),
+            foreach ($blocksConfig as $blockConfig) {
+                if (trim($blockConfig['name'])) {
+                    $wrapInfo[trim($blockConfig['name'])] = array(
+                        'name' => trim($blockConfig['name'])
                     );
                 }
             }
-
-            $this->_objectCache[__METHOD__] = $wrapBlockInfo;
+            $this->_objectCache[__METHOD__ . $store] = $wrapInfo;
         }
-
-        return $this->_objectCache[__METHOD__];
+        return $this->_objectCache[__METHOD__ . $store];
     }
 
     /**

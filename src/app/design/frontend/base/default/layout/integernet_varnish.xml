@@ -14,35 +14,19 @@
  */
 -->
 <layout version="0.1.0">
-
     <integernetvarnish>
-
         <reference name="head">
             <action method="addJs"><script>integernet_varnish/script.js</script></action>
         </reference>
-
         <reference name="before_body_end">
             <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml"></block>
         </reference>
-
-        <varnishwrap name="top.links"/>
-        <varnishwrap name="cart_sidebar"/>
-        <varnishwrap name="right.reports.product.viewed"/>
-        <varnishwrap name="right.reports.product.compared"/>
-        <varnishwrap name="catalog.compare.sidebar"/>
-        <varnishwrap name="global_messages"/>
-        <varnishwrap name="messages"/>
-        <varnishwrap name="right.poll"/>
-
     </integernetvarnish>
-
     <catalog_product_view>
         <reference name="content">
-
             <action method="unsetChild">
                 <name>external.pagecache.cookie</name>
             </action>
-
             <block type="integernet_varnish/cookie" name="integernet_varnish_external_pagecache_cookie" template="pagecache/cookie.phtml"/>
         </reference>
     </catalog_product_view>
