@@ -20,7 +20,7 @@ class IntegerNet_Varnish_Block_System_Config_Form_Field_Param extends Mage_Admin
     {
         $this->addColumn('param', array(
             'label' => Mage::helper('integernet_varnish')->__('Param'),
-            'style' => 'width:323px',
+            'style' => 'width:330px',
         ));
 
         $this->_addAfter = false;
