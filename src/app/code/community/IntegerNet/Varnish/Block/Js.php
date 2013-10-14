@@ -23,6 +23,22 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
     }
 
     /**
+     * @return string
+     */
+    public function getRequestUri()
+    {
+        return base64_encode(Mage::app()->getRequest()->getServer('REQUEST_URI'));
+    }
+
+    /**
+     * @return string
+     */
+    public function getHandler()
+    {
+        return base64_encode(implode(',', Mage::app()->getLayout()->getUpdate()->getHandles()));
+    }
+
+    /**
      * Render block HTML
      *
      * @return string

@@ -21,18 +21,19 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
         /**
          * @see Mage_Core_Helper_Url::getCurrentUrl
          */
-        if($this->getRequest()->getParam('pathname')) {
-            $_SERVER['REQUEST_URI'] = $this->getRequest()->getParam('pathname');
+        if($from = $this->getRequest()->getParam('from')) {
+            $_SERVER['REQUEST_URI'] = base64_decode($from);
         }
 
         $response = array();
 
         $blocks = $this->_blocks();
-
         $response = array_merge($response, $blocks);
 
+        $response = Mage::helper('core')->jsonEncode($response);
+
         $this->getResponse()->setHeader('Content-Type', 'application/json');
-        $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
+        $this->getResponse()->setBody($response);
     }
 
     /**
@@ -40,6 +41,11 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
      */
     protected function _blocks()
     {
+        $blocks = array();
+
+        /**
+         * avoid ___SID param
+         */
         Mage::app()->setUseSessionInUrl(false);
 
         $this->loadLayout();
@@ -52,28 +58,21 @@ class IntegerNet_Varnish_FetchController extends Mage_Core_Controller_Front_Acti
         $this->_initLayoutMessages('wishlist/session');
         $this->_initLayoutMessages('paypal/session');
 
-        $liveBlocks = array();
-        $storageBlocks = array();
-
         foreach (Mage::helper('integernet_varnish/config')->getBlockWrapInfo() as $name => $info) {
 
             /** @var $block Mage_Core_Block_Abstract */
             $block = $this->getLayout()->getBlock($name);
             if ($block) {
-                $blockHtml = $block->toHtml();
                 $blockWrapId = Mage::helper('integernet_varnish')->getWrapId($name);
 
-                $liveBlocks[$blockWrapId] = $blockHtml;
-
-                if(!$info['nocache']) {
-                    $storageBlocks[$blockWrapId] = $blockHtml;
+                if($block instanceof Mage_Core_Block_Messages && $block->getMessageCollection()->count()) {
+                    $blocks['_bb'][$blockWrapId] = $block->toHtml();
+                } else {
+                    $blocks['_ba'][$blockWrapId] = $block->toHtml();
                 }
             }
         }
 
-        return array(
-            'blocks' => $liveBlocks,
-            'storage' => Mage::helper('core')->jsonEncode($storageBlocks),
-        );
+        return $blocks;
     }
 }

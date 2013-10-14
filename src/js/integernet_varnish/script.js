@@ -19,14 +19,19 @@ IntegerNetVarnish.prototype = {
      *
      * @param config
      */
-    initialize: function (fetchUrl) {
+    initialize: function (fetchUrl, requestUri, handler) {
+
         this.fetchUrl = fetchUrl;
-        this.blocks = {};
+        this.requestUri = requestUri;
+        this.handler = handler;
+
+        this.blocks = {cached: {}, temp: {}};
         this.blockStorageKey = 'integernetvarnish_blocks';
+
+        this._fetchBlocks();
 
         Event.observe(window, 'load', function () {
             this._updateBlocks();
-            this._fetchBlocks();
         }.bind(this));
     },
 
@@ -36,7 +41,10 @@ IntegerNetVarnish.prototype = {
      */
     _fetchBlocks: function () {
         new Ajax.Request(this.fetchUrl, {
-            parameters: {pathname : window.location.pathname},
+            parameters: {
+                from: this.requestUri,
+                handler: this.handler
+            },
             onSuccess: this._updateData.bind(this),
             onComplete: this._updateBlocks.bind(this)
         });
@@ -49,12 +57,16 @@ IntegerNetVarnish.prototype = {
     _updateData: function (respose) {
         if (respose.status == 200) {
 
-            if (respose.responseJSON.blocks) {
-                this.blocks = respose.responseJSON.blocks
+            if (respose.responseJSON._ba) {
+                this.blocks.cached = respose.responseJSON._ba
+
+                if (window.sessionStorage) {
+                    window.sessionStorage.setItem(this.blockStorageKey, Object.toJSON(this.blocks.cached));
+                }
             }
 
-            if (window.sessionStorage && respose.responseJSON.storage) {
-                window.sessionStorage.setItem(this.blockStorageKey, respose.responseJSON.storage);
+            if (respose.responseJSON._bb) {
+                this.blocks.temp = respose.responseJSON._bb
             }
         }
     },
@@ -64,14 +76,15 @@ IntegerNetVarnish.prototype = {
      * @private
      */
     _updateBlocks: function () {
-        if (window.sessionStorage && Object.keys(this.blocks).length == 0 && window.sessionStorage.getItem(this.blockStorageKey)) {
-            this.blocks = window.sessionStorage.getItem(this.blockStorageKey).evalJSON();
+        if (window.sessionStorage && Object.keys(this.blocks.cached).length == 0 && window.sessionStorage.getItem(this.blockStorageKey)) {
+            this.blocks.cached = window.sessionStorage.getItem(this.blockStorageKey).evalJSON();
         }
 
-        for (var id in this.blocks) {
+        var blocks = Object.extend(this.blocks.cached, this.blocks.temp);
+        for (var id in blocks) {
             var element = $(id);
             if (element) {
-                element.replace(this.blocks[id]);
+                element.replace(blocks[id]);
             }
         }
     }

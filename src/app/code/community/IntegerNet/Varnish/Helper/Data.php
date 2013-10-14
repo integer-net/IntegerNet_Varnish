@@ -199,6 +199,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getWrapId($blockNameInLayout)
     {
-        return sprintf('varnishwrap_%s', $blockNameInLayout);
+        return sprintf('varnishwrap_%s', md5($blockNameInLayout));
     }
 }

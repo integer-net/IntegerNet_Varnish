@@ -30,8 +30,8 @@
         <varnishwrap name="right.reports.product.viewed"/>
         <varnishwrap name="right.reports.product.compared"/>
         <varnishwrap name="catalog.compare.sidebar"/>
-        <varnishwrap name="global_messages" nocache="1"/>
-        <varnishwrap name="messages" nocache="1"/>
+        <varnishwrap name="global_messages"/>
+        <varnishwrap name="messages"/>
         <varnishwrap name="right.poll"/>
 
     </integernetvarnish>

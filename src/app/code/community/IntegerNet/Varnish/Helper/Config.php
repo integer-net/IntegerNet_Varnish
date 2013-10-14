@@ -155,7 +155,6 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
                 foreach ($varnishWrap as $node) {
                     $wrapBlockInfo[$node->getAttribute('name')] = array(
                         'name' => $node->getAttribute('name'),
-                        'nocache' => ($node->getAttribute('nocache') == 1) ? 1 : 0,
                     );
                 }
             }
