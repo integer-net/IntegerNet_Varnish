@@ -58,14 +58,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return bool
-     */
-    public function isModuleRoute()
-    {
-        return $this->_getRequest()->getRequestedRouteName() == 'integernet_varnish';
-    }
-
-    /**
      * @return array
      */
     public function isDisqualified()
@@ -163,16 +155,6 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
         if ($noCache) {
             $cookie->delete(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
         }
-
-        return $this;
-    }
-
-    /**
-     * @return self
-     */
-    public function addLayoutHandle()
-    {
-        Mage::app()->getLayout()->getUpdate()->addHandle('integernetvarnish');
 
         return $this;
     }

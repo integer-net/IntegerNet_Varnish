@@ -37,28 +37,34 @@ class IntegerNet_Varnish_Model_Build
         $clint = new Zend_Http_Client();
         $clint->setHeaders('Accept-Encoding', 'gzip, deflate');
         $clint->setHeaders('Cache-Control', 'no-cache');
+        $clint->setHeaders('User-Agent', 'varnish_build');
 
         foreach($expiredUrls as $id => $url) {
 
             $timeStart = microtime(true);
             $expiredUrlCount++;
 
-            $clint->setUri($url);
-            $response = $clint->request();
+            try {
+                $clint->setUri($url);
+                $response = $clint->request();
 
-            if($response->getStatus() != 200) {
-                $removerFromIndex[] = $id;
-            }
+                if($response->getStatus() != 200) {
+                    $removerFromIndex[] = $id;
+                }
 
-            usleep(300000); // 0.3s
+                usleep(300000); // 0.3s
 
-            $timeStop = microtime(true);
-            $runTimeCurrent = $timeStop - $timeStart;
-            $runTime += $runTimeCurrent;
+                $timeStop = microtime(true);
+                $runTimeCurrent = $timeStop - $timeStart;
+                $runTime += $runTimeCurrent;
 
-            if(Mage::helper('integernet_varnish/config')->isDebugMode()) {
-                $label = $this->_getLogLabel($expiredUrlCount, $expiredUrlTotal, $runTimeCurrent, $response->getStatus(), $url);
-                Mage::log($label, null, 'integernet_varnish_build.log', true);
+                if(Mage::helper('integernet_varnish/config')->isDebugMode()) {
+                    $label = $this->_getLogLabel($expiredUrlCount, $expiredUrlTotal, $runTimeCurrent, $response->getStatus(), $url);
+                    Mage::log($label, null, 'integernet_varnish_build.log', true);
+                }
+
+            } catch(Exception $e) {
+
             }
 
             if($runTime > self::MAX_RUN_TIME) {

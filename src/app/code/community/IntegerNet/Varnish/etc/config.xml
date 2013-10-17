@@ -88,6 +88,9 @@
                 <store>integernet_varnish/invalidate_store</store>
             </invalidate>
         </integernet_varnish>
+        <ignore_user_agents>
+            <varnish1>varnish_build</varnish1>
+        </ignore_user_agents>
     </global>
     <crontab>
         <jobs>
@@ -129,15 +132,6 @@
                 </integernet_varnish>
             </updates>
         </layout>
-        <routers>
-            <integernet_varnish>
-                <use>standard</use>
-                <args>
-                    <module>IntegerNet_Varnish</module>
-                    <frontName>integernetvarnish</frontName>
-                </args>
-            </integernet_varnish>
-        </routers>
         <events>
             <controller_action_predispatch>
                 <observers>
@@ -147,14 +141,14 @@
                     </pagecache>
                 </observers>
             </controller_action_predispatch>
-            <controller_action_layout_load_before>
+            <controller_action_postdispatch>
                 <observers>
-                    <integernet_varnish>
+                    <pagecache>
                         <class>integernet_varnish/observer</class>
-                        <method>controllerActionLayoutLoadBefore</method>
-                    </integernet_varnish>
+                        <method>controllerActionPostdispatch</method>
+                    </pagecache>
                 </observers>
-            </controller_action_layout_load_before>
+            </controller_action_postdispatch>
             <core_block_abstract_to_html_before>
                 <observers>
                     <integernet_varnish>

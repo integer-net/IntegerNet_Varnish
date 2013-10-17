@@ -14,14 +14,14 @@
  */
 -->
 <layout version="0.1.0">
-    <integernetvarnish>
+    <default>
         <reference name="head">
             <action method="addJs"><script>integernet_varnish/script.js</script></action>
         </reference>
         <reference name="before_body_end">
-            <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml"></block>
+            <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml" />
         </reference>
-    </integernetvarnish>
+    </default>
     <catalog_product_view>
         <reference name="content">
             <action method="unsetChild">

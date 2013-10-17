@@ -19,12 +19,7 @@ IntegerNetVarnish.prototype = {
      *
      * @param config
      */
-    initialize: function (fetchUrl, requestUri, handler) {
-
-        this.fetchUrl = fetchUrl;
-        this.requestUri = requestUri;
-        this.handler = handler;
-
+    initialize: function () {
         this.blocks = {cached: {}, temp: {}};
         this.blockStorageKey = 'integernetvarnish_blocks';
 
@@ -40,11 +35,8 @@ IntegerNetVarnish.prototype = {
      * @private
      */
     _fetchBlocks: function () {
-        new Ajax.Request(this.fetchUrl, {
-            parameters: {
-                from: this.requestUri,
-                handler: this.handler
-            },
+        new Ajax.Request(window.location.href, {
+            parameters: { dyn_block: 1 },
             onSuccess: this._updateData.bind(this),
             onComplete: this._updateBlocks.bind(this)
         });
