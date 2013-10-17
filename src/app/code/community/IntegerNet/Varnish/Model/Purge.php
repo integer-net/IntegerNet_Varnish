@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Purge
                 /** @var $uri Zend_Uri_Http */
                 $uri = Zend_Uri_Http::factory();
                 $uri->setHost(Mage::helper('integernet_varnish/config')->getPurgeServer($store->getId()));
-                $uri->setPath('/*');
+                $uri->setPath(Mage::helper('integernet_varnish/config')->getPurgeUrl($store->getId()));
 
                 $clint = new Zend_Http_Client($uri);
                 $clint->setHeaders('Host', $host);

@@ -170,6 +170,7 @@
                 <disqualified_params>a:5:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}s:18:"_1381329617433_433";a:1:{s:5:"param";s:5:"gclid";}s:17:"_1381394532046_46";a:1:{s:5:"param";s:9:"PHPSESSID";}}</disqualified_params>
                 <bypass_states>currency,store</bypass_states>
                 <purge_server><![CDATA[127.0.0.1]]></purge_server>
+                <purge_url><![CDATA[/*]]></purge_url>
                 <debug_mode>1</debug_mode>
             </integernet_varnish>
         </system>

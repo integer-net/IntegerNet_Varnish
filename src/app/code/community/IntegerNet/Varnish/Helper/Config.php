@@ -25,6 +25,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS = 'system/integernet_varnish/disqualified_params';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_BYPASS_STATES = 'system/integernet_varnish/bypass_states';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_SERVER = 'system/integernet_varnish/purge_server';
+    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_URL = 'system/integernet_varnish/purge_url';
     const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DEBUG_MODE = 'system/integernet_varnish/debug_mode';
 
     /**
@@ -131,6 +132,15 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     public function getPurgeServer($store = null)
     {
         return (string)Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_SERVER, $store);
+    }
+
+    /**
+     * @param null $store
+     * @return string
+     */
+    public function getPurgeUrl($store = null)
+    {
+        return (string)Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_URL, $store);
     }
 
     /**

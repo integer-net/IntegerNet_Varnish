@@ -87,16 +87,18 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
      * add urls by request for purge control
      *
      * @param $url
+     * @param $route
      * @param $lifetime
      * @return $this
      */
-    public function addUrl($url, $lifetime)
+    public function addUrl($url, $route, $lifetime)
     {
         $key = md5($url);
 
         $indexUrls = array();
         $indexUrls[$key] = array(
             'url_key' => $key,
+            'route' => $route,
             'url' => $url,
             'expire' => date('Y-m-d H:i:s', time() + $lifetime),
             'priority' => self::PRIORITY_NORMAL,

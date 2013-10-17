@@ -51,6 +51,6 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_PurgeController extends Mag
      */
     protected function _isAllowed()
     {
-        return Mage::getSingleton('admin/session')->isAllowed('integernet_varnish');
+        return Mage::getSingleton('admin/session')->isAllowed('system/cache/integernet_varnish_purge');
     }
 }

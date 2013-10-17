@@ -23,6 +23,23 @@
                         <sort_order>0</sort_order>
                     </integernet_varnish>
                 </children>
+                <children>
+                    <system>
+                        <children>
+                            <cache>
+                                <children>
+                                    <integernet_varnish_index translate="title" module="integernet_varnish">
+                                        <title>Varnish Page Cache Index (IntegerNet_Varnish)</title>
+                                        <sort_order>0</sort_order>
+                                    </integernet_varnish_index>
+                                    <integernet_varnish_purge translate="title" module="integernet_varnish">
+                                        <title>Varnish Page Cache Full Purge Action(IntegerNet_Varnish)</title>
+                                    </integernet_varnish_purge>
+                                </children>
+                            </cache>
+                        </children>
+                    </system>
+                </children>
             </admin>
         </resources>
     </acl>

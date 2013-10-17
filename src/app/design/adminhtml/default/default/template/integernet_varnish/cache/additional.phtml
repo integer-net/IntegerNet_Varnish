@@ -15,15 +15,27 @@
 
 <?php /** @var $this IntegerNet_Varnish_Block_Adminhtml_Cache_Additional */ ?>
 
-<?php if ($this->canShowButton()): ?>
+<?php if ($this->canShowPurgeButton() || $this->canShowIndexButton()): ?>
 <table class="form-list">
-    <tr>
-        <td class="scope-label">
-            <button onclick="setLocation('<?php echo $this->getFullPurgeUrl()?>')" type="button" class="scalable"><span><?php echo Mage::helper('integernet_varnish')->__('Flush Varnish Page Cache') ?></span></button>
-        </td>
-        <td class="scope-label">
-            <?php echo Mage::helper('integernet_varnish')->__('External varnish full page cache.')?>
-        </td>
-    </tr>
+    <?php if ($this->canShowPurgeButton()): ?>
+        <tr>
+            <td class="scope-label">
+                <button onclick="setLocation('<?php echo $this->getFullPurgeUrl()?>')" type="button" class="scalable"><span><?php echo Mage::helper('integernet_varnish')->__('Full Page Cache Flush') ?></span></button>
+            </td>
+            <td class="scope-label">
+                <?php echo Mage::helper('integernet_varnish')->__('External varnish full page cache.')?>
+            </td>
+        </tr>
+    <?php endif; ?>
+    <?php if ($this->canShowIndexButton()): ?>
+        <tr>
+            <td class="scope-label">
+                <button onclick="setLocation('<?php echo $this->getIndexUrl() ?>')" type="button" class="scalable"><span><?php echo Mage::helper('integernet_varnish')->__('Full Page Cache Index') ?></span></button>
+            </td>
+            <td class="scope-label">
+                <?php echo Mage::helper('integernet_varnish')->__('External varnish cache index.')?>
+            </td>
+        </tr>
+    <?php endif; ?>
 </table>
 <?php endif;?>

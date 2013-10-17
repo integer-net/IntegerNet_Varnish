@@ -33,6 +33,9 @@ $table = $installer->getConnection()
     ->addColumn('url_key', Varien_Db_Ddl_Table::TYPE_TEXT, 32, array(
         'nullable' => false,
     ), 'Url Key')
+    ->addColumn('route', Varien_Db_Ddl_Table::TYPE_TEXT, 128, array(
+        'nullable' => false,
+    ), 'Rout')
     ->addColumn('url', Varien_Db_Ddl_Table::TYPE_TEXT, 1024, array(
         'nullable' => false,
     ), 'Url')

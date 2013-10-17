@@ -79,7 +79,7 @@ class IntegerNet_Varnish_Model_Observer
                         Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
                         Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
 
-                        Mage::getModel('integernet_varnish/index')->addUrl(Mage::helper('core/url')->getCurrentUrl(), $lifetime);
+                        Mage::getModel('integernet_varnish/index')->addUrl(Mage::helper('core/url')->getCurrentUrl(), $controller->getFullActionName('/'), $lifetime);
 
                         $helper->debug('lifetime', $lifetime);
 
