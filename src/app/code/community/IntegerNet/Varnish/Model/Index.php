@@ -97,6 +97,7 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
 
         $indexUrls = array();
         $indexUrls[$key] = array(
+            'updated_at' => date('Y-m-d H:i:s'),
             'url_key' => $key,
             'route' => $route,
             'url' => $url,
@@ -129,8 +130,45 @@ class IntegerNet_Varnish_Model_Index extends Mage_Core_Model_Abstract
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function setAllExpire()
     {
         $this->getResource()->setAllExpire();
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPriorityOptions()
+    {
+        return array(
+            self::PRIORITY_HIGH => Mage::helper('integernet_varnish')->__('High'),
+            self::PRIORITY_NORMAL => Mage::helper('integernet_varnish')->__('Normal'),
+            self::PRIORITY_LOW => Mage::helper('integernet_varnish')->__('Low'),
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function getRouteOptions()
+    {
+        $indexCollection = $this->getCollection();
+        $indexCollection->getSelect()->reset(Varien_Db_Select::COLUMNS);
+        $indexCollection->distinct(true);
+        $indexCollection->addFieldToSelect('route');
+        $indexCollection->setOrder('route', Varien_Db_Select::SQL_ASC);
+        $indexCollection->load();
+
+        $routesOptions = array();
+        foreach ($indexCollection as $routes) {
+            $routesOptions[$routes->getRoute()] = $routes->getRoute();
+        }
+
+        return $routesOptions;
     }
 }

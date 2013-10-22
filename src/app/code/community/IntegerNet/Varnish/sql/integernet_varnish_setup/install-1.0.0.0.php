@@ -30,6 +30,9 @@ $table = $installer->getConnection()
         'primary' => true,
         'unsigned' => true,
     ), 'Entity Id')
+    ->addColumn('updated_at', Varien_Db_Ddl_Table::TYPE_TIMESTAMP, null, array(
+        'nullable' => false,
+    ), 'Updated At')
     ->addColumn('url_key', Varien_Db_Ddl_Table::TYPE_TEXT, 32, array(
         'nullable' => false,
     ), 'Url Key')
