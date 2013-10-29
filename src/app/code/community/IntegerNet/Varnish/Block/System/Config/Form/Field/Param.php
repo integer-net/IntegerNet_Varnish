@@ -27,4 +27,15 @@ class IntegerNet_Varnish_Block_System_Config_Form_Field_Param extends Mage_Admin
         $this->_addButtonLabel = Mage::helper('integernet_varnish')->__('Add Param');
         parent::__construct();
     }
+
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        $id = $this->getElement()->getHtmlId();
+        return sprintf('<input id="%s" style="display: none;"/>', $id) . parent::_toHtml();
+    }
 }

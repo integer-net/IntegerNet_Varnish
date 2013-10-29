@@ -21,6 +21,6 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Renderer_Url extends Mage_Adminht
     public function render(Varien_Object $row)
     {
         $value = $row->getData($this->getColumn()->getIndex());
-        return sprintf('<a href="%s">%s</a>',$value, $value);
+        return sprintf('<a target="_blank" href="%s">%s</a>',$value, $value);
     }
 }

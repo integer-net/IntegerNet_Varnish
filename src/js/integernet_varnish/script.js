@@ -20,8 +20,10 @@ IntegerNetVarnish.prototype = {
      * @param config
      */
     initialize: function () {
+        this.script = '';
         this.blocks = {cached: {}, temp: {}};
-        this.blockStorageKey = 'integernetvarnish_blocks';
+        this.blocksStorageKey = 'integernetvarnish_blocks';
+        this.scriptStorageKey = 'integernetvarnish_script';
 
         this._fetchBlocks();
 
@@ -49,16 +51,24 @@ IntegerNetVarnish.prototype = {
     _updateData: function (respose) {
         if (respose.status == 200) {
 
-            if (respose.responseJSON._ba) {
-                this.blocks.cached = respose.responseJSON._ba
+            if(respose.responseJSON.script) {
+                this.script = respose.responseJSON.script;
 
                 if (window.sessionStorage) {
-                    window.sessionStorage.setItem(this.blockStorageKey, Object.toJSON(this.blocks.cached));
+                    window.sessionStorage.setItem(this.scriptStorageKey, this.script);
                 }
             }
 
-            if (respose.responseJSON._bb) {
-                this.blocks.temp = respose.responseJSON._bb
+            if (respose.responseJSON.blocks.a) {
+                this.blocks.cached = respose.responseJSON.blocks.a;
+
+                if (window.sessionStorage) {
+                    window.sessionStorage.setItem(this.blocksStorageKey, Object.toJSON(this.blocks.cached));
+                }
+            }
+
+            if (respose.responseJSON.blocks.b) {
+                this.blocks.temp = respose.responseJSON.blocks.b;
             }
         }
     },
@@ -68,8 +78,8 @@ IntegerNetVarnish.prototype = {
      * @private
      */
     _updateBlocks: function () {
-        if (window.sessionStorage && Object.keys(this.blocks.cached).length == 0 && window.sessionStorage.getItem(this.blockStorageKey)) {
-            this.blocks.cached = window.sessionStorage.getItem(this.blockStorageKey).evalJSON();
+        if (window.sessionStorage && Object.keys(this.blocks.cached).length == 0 && window.sessionStorage.getItem(this.blocksStorageKey)) {
+            this.blocks.cached = window.sessionStorage.getItem(this.blocksStorageKey).evalJSON();
         }
 
         var blocks = Object.extend(this.blocks.cached, this.blocks.temp);
@@ -79,5 +89,11 @@ IntegerNetVarnish.prototype = {
                 element.replace(blocks[id]);
             }
         }
+
+        if (!this.script && window.sessionStorage && window.sessionStorage.getItem(this.scriptStorageKey)) {
+            this.script = window.sessionStorage.getItem(this.scriptStorageKey);
+        }
+
+        eval(this.script);
     }
 };

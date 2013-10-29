@@ -115,7 +115,10 @@ class IntegerNet_Varnish_Model_Observer
             && $controller->getRequest()->getParam('dyn_block')
         ) {
 
-            $blocks = array();
+            $response = array(
+                'blocks' => array(),
+                'script' => Mage::helper('integernet_varnish/config')->getHolePunchingScript(),
+            );
 
             Mage::app()->setUseSessionInUrl(false);
 
@@ -127,14 +130,14 @@ class IntegerNet_Varnish_Model_Observer
                     $blockWrapId = $helper->getWrapId($name);
 
                     if ($block instanceof Mage_Core_Block_Messages && $block->getMessageCollection()->count()) {
-                        $blocks['_bb'][$blockWrapId] = $block->toHtml();
+                        $response['blocks']['a'][$blockWrapId] = $block->toHtml();
                     } else {
-                        $blocks['_ba'][$blockWrapId] = $block->toHtml();
+                        $response['blocks']['b'][$blockWrapId] = $block->toHtml();
                     }
                 }
             }
 
-            $response = Mage::helper('core')->jsonEncode($blocks);
+            $response = Mage::helper('core')->jsonEncode($response);
 
             $controller->getResponse()->setHeader('Content-Type', 'application/json');
             $controller->getResponse()->setBody($response);

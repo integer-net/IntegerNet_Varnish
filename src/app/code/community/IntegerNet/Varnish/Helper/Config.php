@@ -16,33 +16,59 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     /**
      *
      */
-    const XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_ENABLE = 'system/integernet_varnish/enable';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_CACHE_ROUTES = 'system/integernet_varnish/cache_routes';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_PUNCHING = 'system/integernet_varnish/hole_punching';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_BLOCKS = 'system/integernet_varnish/hole_blocks';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_STATES = 'system/integernet_varnish/disqualified_states';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS = 'system/integernet_varnish/disqualified_params';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_BYPASS_STATES = 'system/integernet_varnish/bypass_states';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_SERVER = 'system/integernet_varnish/purge_server';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_URL = 'system/integernet_varnish/purge_url';
-    const XML_PATH_SYSTEM_INTEGERNET_VARNISH_DEBUG_MODE = 'system/integernet_varnish/debug_mode';
+    const XML_PATH_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
+    const XML_PATH_INTEGERNET_VARNISH_CACHE_ROUTES = 'system/external_page_cache/integernet_varnish_cache_routes';
+    const XML_PATH_INTEGERNET_VARNISH_BYPASS_STATES = 'system/external_page_cache/integernet_varnish_bypass_states';
+    const XML_PATH_INTEGERNET_VARNISH_DISQUALIFIED_STATES = 'system/external_page_cache/integernet_varnish_disqualified_states';
+    const XML_PATH_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS = 'system/external_page_cache/integernet_varnish_disqualified_params';
+    const XML_PATH_INTEGERNET_VARNISH_HOLE_PUNCHING = 'system/external_page_cache/integernet_varnish_hole_punching';
+    const XML_PATH_INTEGERNET_VARNISH_HOLE_BLOCKS = 'system/external_page_cache/integernet_varnish_hole_blocks';
+    const XML_PATH_INTEGERNET_VARNISH_HOLE_JS = 'system/external_page_cache/integernet_varnish_hole_js';
+    const XML_PATH_INTEGERNET_VARNISH_PURGE_SERVER = 'system/external_page_cache/integernet_varnish_purge_server';
+    const XML_PATH_INTEGERNET_VARNISH_PURGE_URL = 'system/external_page_cache/integernet_varnish_purge_url';
+    const XML_PATH_INTEGERNET_VARNISH_DEBUG_MODE = 'system/external_page_cache/integernet_varnish_debug_mode';
 
     /**
+     * Object Cache
      * @var array
      */
     private $_objectCache = array();
 
     /**
-     * @param null $store
+     * @return IntegerNet_Varnish_Model_Invalidate_Interface[]
+     */
+    public function getInvalidateModels()
+    {
+        if (!array_key_exists(__METHOD__, $this->_objectCache)) {
+            $invalidateModels = array();
+            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_INTEGERNET_VARNISH_INVALIDATE);
+
+            foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
+                $model = Mage::getSingleton($class);
+                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Interface) {
+                    $invalidateModels[$key] = $model;
+                }
+            }
+
+            $this->_objectCache[__METHOD__] = $invalidateModels;
+        }
+
+        return $this->_objectCache[__METHOD__];
+    }
+
+    /**
      * @return bool
      */
-    public function isEnabled($store = null)
+    public function isEnabled()
     {
-        $enable = Mage::getStoreConfigFlag(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_ENABLE, $store);
-        $pageCache = Mage::helper('pagecache')->isEnabled();
+        if (!array_key_exists(__METHOD__, $this->_objectCache)) {
+            $enabled = Mage::helper('pagecache')->isEnabled();
+            $cacheControlInstance = Mage::helper('pagecache')->getCacheControlInstance();
 
-        return $enable && !$pageCache;
+            $this->_objectCache[__METHOD__] = $enabled && $cacheControlInstance instanceof IntegerNet_Varnish_Model_Control_Varnish;
+        }
+
+        return $this->_objectCache[__METHOD__];
     }
 
     /**
@@ -54,7 +80,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
         if (!array_key_exists(__METHOD__ . $store, $this->_objectCache)) {
 
             $routes = array();
-            $routesConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_CACHE_ROUTES, $store));
+            $routesConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_CACHE_ROUTES, $store));
 
             foreach ($routesConfig as $routeConfig) {
                 $route = explode('/', $routeConfig['route']);
@@ -79,11 +105,12 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return bool
+     * @param null $store
+     * @return array
      */
-    public function isHolePunching()
+    public function getBypassStates($store = null)
     {
-        return Mage::getStoreConfigFlag(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_PUNCHING, $store = null);
+        return explode(',', Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_BYPASS_STATES, $store));
     }
 
     /**
@@ -92,7 +119,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
      */
     public function getDisqualifiedStates($store = null)
     {
-        return explode(',', Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_STATES, $store));
+        return explode(',', Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_DISQUALIFIED_STATES, $store));
     }
 
     /**
@@ -104,7 +131,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
         if (!array_key_exists(__METHOD__ . $store, $this->_objectCache)) {
 
             $params = array();
-            $paramsConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS, $store));
+            $paramsConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_DISQUALIFIED_PARAMS, $store));
 
             foreach ($paramsConfig as $paramConfig) {
                 if (trim($paramConfig['param'])) {
@@ -118,38 +145,11 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
 
     /**
      * @param null $store
-     * @return array
-     */
-    public function getBypassStates($store = null)
-    {
-        return explode(',', Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_BYPASS_STATES, $store));
-    }
-
-    /**
-     * @param null $store
-     * @return string
-     */
-    public function getPurgeServer($store = null)
-    {
-        return (string)Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_SERVER, $store);
-    }
-
-    /**
-     * @param null $store
-     * @return string
-     */
-    public function getPurgeUrl($store = null)
-    {
-        return (string)Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_PURGE_URL, $store);
-    }
-
-    /**
-     * @param null $store
      * @return bool
      */
-    public function isDebugMode($store = null)
+    public function isHolePunching($store = null)
     {
-        return Mage::getStoreConfigFlag(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_DEBUG_MODE, $store);
+        return Mage::getStoreConfigFlag(self::XML_PATH_INTEGERNET_VARNISH_HOLE_PUNCHING, $store = null);
     }
 
     /**
@@ -161,7 +161,7 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
         if (!array_key_exists(__METHOD__ . $store, $this->_objectCache)) {
 
             $wrapInfo = array();
-            $blocksConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_SYSTEM_INTEGERNET_VARNISH_HOLE_BLOCKS, $store));
+            $blocksConfig = unserialize(Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_HOLE_BLOCKS, $store));
 
             foreach ($blocksConfig as $blockConfig) {
                 if (trim($blockConfig['name'])) {
@@ -176,24 +176,38 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * @return IntegerNet_Varnish_Model_Invalidate_Interface[]
+     * @param null $store
+     * @return mixed
      */
-    public function getInvalidateModels()
+    public function getHolePunchingScript($store = null)
     {
-        if (!array_key_exists(__METHOD__, $this->_objectCache)) {
-            $invalidateModels = array();
-            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_GLOBAL_INTEGERNET_VARNISH_INVALIDATE);
+        return trim(Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_HOLE_JS, $store)) . ';';
+    }
 
-            foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
-                $model = Mage::getSingleton($class);
-                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Interface) {
-                    $invalidateModels[$key] = $model;
-                }
-            }
+    /**
+     * @param null $store
+     * @return string
+     */
+    public function getPurgeServer($store = null)
+    {
+        return (string)Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_PURGE_SERVER, $store);
+    }
 
-            $this->_objectCache[__METHOD__] = $invalidateModels;
-        }
+    /**
+     * @param null $store
+     * @return string
+     */
+    public function getPurgeUrl($store = null)
+    {
+        return (string)Mage::getStoreConfig(self::XML_PATH_INTEGERNET_VARNISH_PURGE_URL, $store);
+    }
 
-        return $this->_objectCache[__METHOD__];
+    /**
+     * @param null $store
+     * @return bool
+     */
+    public function isDebugMode($store = null)
+    {
+        return Mage::getStoreConfigFlag(self::XML_PATH_INTEGERNET_VARNISH_DEBUG_MODE, $store);
     }
 }

@@ -91,6 +91,14 @@
         <ignore_user_agents>
             <varnish1>varnish_build</varnish1>
         </ignore_user_agents>
+        <external_cache>
+            <controls>
+                <integernet_varnish translate="label" module="integernet_varnish">
+                    <label>Varnish by IntegerNet Module</label>
+                    <class>integernet_varnish/control_varnish</class>
+                </integernet_varnish>
+            </controls>
+        </external_cache>
     </global>
     <crontab>
         <jobs>
@@ -107,9 +115,9 @@
     <adminhtml>
         <layout>
             <updates>
-                <pagecache>
+                <integernet_varnish>
                     <file>integernet_varnish.xml</file>
-                </pagecache>
+                </integernet_varnish>
             </updates>
         </layout>
     </adminhtml>
@@ -161,18 +169,17 @@
     </frontend>
     <default>
         <system>
-            <integernet_varnish>
-                <enable>1</enable>
-                <cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</cache_routes>
-                <hole_punching>1</hole_punching>
-                <hole_blocks>a:8:{s:18:"_1381778519126_126";a:1:{s:4:"name";s:9:"top.links";}s:18:"_1381778543629_629";a:1:{s:4:"name";s:12:"cart_sidebar";}s:18:"_1381778544485_485";a:1:{s:4:"name";s:28:"right.reports.product.viewed";}s:18:"_1381778545157_157";a:1:{s:4:"name";s:30:"right.reports.product.compared";}s:18:"_1381778545771_771";a:1:{s:4:"name";s:23:"catalog.compare.sidebar";}s:18:"_1381778546551_551";a:1:{s:4:"name";s:15:"global_messages";}s:18:"_1381778585877_877";a:1:{s:4:"name";s:8:"messages";}s:18:"_1381778592658_658";a:1:{s:4:"name";s:10:"right.poll";}}</hole_blocks>
-                <disqualified_states>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</disqualified_states>
-                <disqualified_params>a:5:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}s:18:"_1381329617433_433";a:1:{s:5:"param";s:5:"gclid";}s:17:"_1381394532046_46";a:1:{s:5:"param";s:9:"PHPSESSID";}}</disqualified_params>
-                <bypass_states>currency,store</bypass_states>
-                <purge_server><![CDATA[127.0.0.1]]></purge_server>
-                <purge_url><![CDATA[/*]]></purge_url>
-                <debug_mode>1</debug_mode>
-            </integernet_varnish>
+            <external_page_cache>
+                <integernet_varnish_cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</integernet_varnish_cache_routes>
+                <integernet_varnish_hole_punching>1</integernet_varnish_hole_punching>
+                <integernet_varnish_hole_blocks>a:8:{s:18:"_1381778519126_126";a:1:{s:4:"name";s:9:"top.links";}s:18:"_1381778543629_629";a:1:{s:4:"name";s:12:"cart_sidebar";}s:18:"_1381778544485_485";a:1:{s:4:"name";s:28:"right.reports.product.viewed";}s:18:"_1381778545157_157";a:1:{s:4:"name";s:30:"right.reports.product.compared";}s:18:"_1381778545771_771";a:1:{s:4:"name";s:23:"catalog.compare.sidebar";}s:18:"_1381778546551_551";a:1:{s:4:"name";s:15:"global_messages";}s:18:"_1381778585877_877";a:1:{s:4:"name";s:8:"messages";}s:18:"_1381778592658_658";a:1:{s:4:"name";s:10:"right.poll";}}</integernet_varnish_hole_blocks>
+                <integernet_varnish_disqualified_states>checkout,compare,currency,customer,message,poll,recently_compared,recently_viewed,store</integernet_varnish_disqualified_states>
+                <integernet_varnish_disqualified_params>a:5:{s:17:"_1380796233099_99";a:1:{s:5:"param";s:8:"___store";}s:18:"_1380796344807_807";a:1:{s:5:"param";s:6:"___SID";}s:18:"_1380796371849_849";a:1:{s:5:"param";s:13:"___from_store";}s:18:"_1381329617433_433";a:1:{s:5:"param";s:5:"gclid";}s:17:"_1381394532046_46";a:1:{s:5:"param";s:9:"PHPSESSID";}}</integernet_varnish_disqualified_params>
+                <integernet_varnish_bypass_states>currency,store</integernet_varnish_bypass_states>
+                <integernet_varnish_purge_server><![CDATA[127.0.0.1]]></integernet_varnish_purge_server>
+                <integernet_varnish_purge_url><![CDATA[/*]]></integernet_varnish_purge_url>
+                <integernet_varnish_debug_mode>1</integernet_varnish_debug_mode>
+            </external_page_cache>
         </system>
     </default>
 </config>
