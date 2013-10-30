@@ -77,7 +77,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
 
-        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateModels();
+        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateResponseModels();
         $disqualifiedStates = Mage::helper('integernet_varnish/config')->getDisqualifiedStates();
 
         foreach ($invalidateModels as $invalidate) {
@@ -98,7 +98,7 @@ class IntegerNet_Varnish_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isBypass()
     {
-        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateModels();
+        $invalidateModels = Mage::helper('integernet_varnish/config')->getInvalidateResponseModels();
         $bypassStates = Mage::helper('integernet_varnish/config')->getBypassStates();
 
         $invalidateList = array();

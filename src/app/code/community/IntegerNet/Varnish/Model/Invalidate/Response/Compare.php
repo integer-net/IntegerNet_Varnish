@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_RecentlyViewed implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_Compare implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_RecentlyViewed implements IntegerNet_V
      */
     public function getCode()
     {
-        return 'recently_viewed';
+        return 'compare';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_RecentlyViewed implements IntegerNet_V
      */
     public function getName()
     {
-        return 'Recently Viewed';
+        return 'Compare';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_RecentlyViewed implements IntegerNet_V
      */
     public function getDescription()
     {
-        return 'Products on recently viewed list';
+        return 'Products on compare list';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_RecentlyViewed implements IntegerNet_V
      */
     public function hasData()
     {
-        return (bool)Mage::app()->getLayout()->createBlock('reports/product_viewed')->getCount();
+        return (bool)Mage::helper('catalog/product_compare')->hasItems();
     }
 
     /**

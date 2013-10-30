@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Compare implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_Checkout implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_Compare implements IntegerNet_Varnish_
      */
     public function getCode()
     {
-        return 'compare';
+        return 'checkout';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_Compare implements IntegerNet_Varnish_
      */
     public function getName()
     {
-        return 'Compare';
+        return 'Checkout';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_Compare implements IntegerNet_Varnish_
      */
     public function getDescription()
     {
-        return 'Products on compare list';
+        return 'Items in cart';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_Compare implements IntegerNet_Varnish_
      */
     public function hasData()
     {
-        return (bool)Mage::helper('catalog/product_compare')->hasItems();
+        return (bool)Mage::helper('checkout')->getQuote()->hasItems();
     }
 
     /**

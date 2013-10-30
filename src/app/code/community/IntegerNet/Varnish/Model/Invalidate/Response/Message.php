@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Message implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**

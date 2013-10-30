@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Store implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_Customer implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_Store implements IntegerNet_Varnish_Mo
      */
     public function getCode()
     {
-        return 'store';
+        return 'customer';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_Store implements IntegerNet_Varnish_Mo
      */
     public function getName()
     {
-        return 'Store';
+        return 'Customer';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_Store implements IntegerNet_Varnish_Mo
      */
     public function getDescription()
     {
-        return 'None default store view';
+        return 'Customer is logged in';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_Store implements IntegerNet_Varnish_Mo
      */
     public function hasData()
     {
-        return Mage::app()->getDefaultStoreView()->getId() != Mage::app()->getStore()->getId();
+        return (bool)Mage::helper('customer')->getCustomer()->getId();
     }
 
     /**

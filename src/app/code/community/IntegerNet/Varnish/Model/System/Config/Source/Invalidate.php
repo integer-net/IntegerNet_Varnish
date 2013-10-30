@@ -21,7 +21,7 @@ class IntegerNet_Varnish_Model_System_Config_Source_Invalidate
         $options = array();
 
         /** @var $invalidateModel IntegerNet_Varnish_Model_Invalidate_Interface */
-        foreach (Mage::helper('integernet_varnish/config')->getInvalidateModels() as $invalidateModel) {
+        foreach (Mage::helper('integernet_varnish/config')->getInvalidateResponseModels() as $invalidateModel) {
             $options[] = array('value' => $invalidateModel->getCode(), 'label' => $invalidateModel->getName());
         }
 

@@ -16,7 +16,8 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     /**
      *
      */
-    const XML_PATH_INTEGERNET_VARNISH_INVALIDATE = 'global/integernet_varnish/invalidate';
+    const XML_PATH_INTEGERNET_VARNISH_INVALIDATE_RESPONSE = 'global/integernet_varnish/invalidate/response';
+    const XML_PATH_INTEGERNET_VARNISH_INVALIDATE_RESOURCE = 'global/integernet_varnish/invalidate/resource';
     const XML_PATH_INTEGERNET_VARNISH_CACHE_ROUTES = 'system/external_page_cache/integernet_varnish_cache_routes';
     const XML_PATH_INTEGERNET_VARNISH_BYPASS_STATES = 'system/external_page_cache/integernet_varnish_bypass_states';
     const XML_PATH_INTEGERNET_VARNISH_DISQUALIFIED_STATES = 'system/external_page_cache/integernet_varnish_disqualified_states';
@@ -35,22 +36,44 @@ class IntegerNet_Varnish_Helper_Config extends Mage_Core_Helper_Abstract
     private $_objectCache = array();
 
     /**
-     * @return IntegerNet_Varnish_Model_Invalidate_Interface[]
+     * @return IntegerNet_Varnish_Model_Invalidate_Response_Interface[]
      */
-    public function getInvalidateModels()
+    public function getInvalidateResponseModels()
     {
         if (!array_key_exists(__METHOD__, $this->_objectCache)) {
-            $invalidateModels = array();
-            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_INTEGERNET_VARNISH_INVALIDATE);
+            $invalidateResponseModels = array();
+            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_INTEGERNET_VARNISH_INVALIDATE_RESPONSE);
 
             foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
                 $model = Mage::getSingleton($class);
-                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Interface) {
-                    $invalidateModels[$key] = $model;
+                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Response_Interface) {
+                    $invalidateResponseModels[$key] = $model;
                 }
             }
 
-            $this->_objectCache[__METHOD__] = $invalidateModels;
+            $this->_objectCache[__METHOD__] = $invalidateResponseModels;
+        }
+
+        return $this->_objectCache[__METHOD__];
+    }
+
+    /**
+     * @return IntegerNet_Varnish_Model_Invalidate_Resource_Interface[]
+     */
+    public function getInvalidateResourceModels()
+    {
+        if (!array_key_exists(__METHOD__, $this->_objectCache)) {
+            $invalidateResourceModels = array();
+            $invalidateConfig = Mage::app()->getConfig()->getNode(self::XML_PATH_INTEGERNET_VARNISH_INVALIDATE_RESOURCE);
+
+            foreach ($invalidateConfig->asCanonicalArray() as $key => $class) {
+                $model = Mage::getSingleton($class);
+                if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Resource_Interface) {
+                    $invalidateResourceModels[$key] = $model;
+                }
+            }
+
+            $this->_objectCache[__METHOD__] = $invalidateResourceModels;
         }
 
         return $this->_objectCache[__METHOD__];

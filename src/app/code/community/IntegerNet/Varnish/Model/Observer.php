@@ -16,20 +16,14 @@ class IntegerNet_Varnish_Model_Observer
     /**
      * @param Varien_Event_Observer $observer
      */
-    public function catalogProductSaveAfter(Varien_Event_Observer $observer)
+    public function resourceChange(Varien_Event_Observer $observer)
     {
         if (Mage::helper('integernet_varnish/config')->isEnabled()) {
-            Mage::getModel('integernet_varnish/index')->observerProductUrls($observer->getProduct());
-        }
-    }
 
-    /**
-     * @param Varien_Event_Observer $observer
-     */
-    public function cataloginventoryStockItemSaveAfter(Varien_Event_Observer $observer)
-    {
-        if (Mage::helper('integernet_varnish/config')->isEnabled()) {
-            Mage::getModel('integernet_varnish/index')->observerProductUrls($observer->getItem()->getProductId());
+            /** @var $invalidateResourceModels IntegerNet_Varnish_Model_Invalidate_Resource_Interface */
+            foreach(Mage::helper('integernet_varnish/config')->getInvalidateResourceModels() as $invalidateResourceModels) {
+                $invalidateResourceModels->invalidate($observer->getData('object'));
+            }
         }
     }
 

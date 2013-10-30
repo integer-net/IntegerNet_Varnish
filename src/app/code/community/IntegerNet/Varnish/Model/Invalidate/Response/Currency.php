@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Poll implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_Currency implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_Poll implements IntegerNet_Varnish_Mod
      */
     public function getCode()
     {
-        return 'poll';
+        return 'currency';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_Poll implements IntegerNet_Varnish_Mod
      */
     public function getName()
     {
-        return 'Poll';
+        return 'Currency';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_Poll implements IntegerNet_Varnish_Mod
      */
     public function getDescription()
     {
-        return 'Poll answers';
+        return 'None default currency';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_Poll implements IntegerNet_Varnish_Mod
      */
     public function hasData()
     {
-        return (bool)Mage::getSingleton('poll/poll')->getVotedPollsIds();
+        return Mage::app()->getStore()->getDefaultCurrencyCode() != Mage::app()->getStore()->getCurrentCurrencyCode();
     }
 
     /**

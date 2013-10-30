@@ -58,34 +58,42 @@
             </integernet_varnish_setup>
         </resources>
         <events>
-            <catalog_product_save_after>
+            <model_save_after>
                 <observers>
                     <integernet_varnish>
                         <class>integernet_varnish/observer</class>
-                        <method>catalogProductSaveAfter</method>
+                        <method>resourceChange</method>
                     </integernet_varnish>
                 </observers>
-            </catalog_product_save_after>
-            <cataloginventory_stock_item_save_after>
+            </model_save_after>
+            <model_delete_after>
                 <observers>
                     <integernet_varnish>
                         <class>integernet_varnish/observer</class>
-                        <method>cataloginventoryStockItemSaveAfter</method>
+                        <method>resourceChange</method>
                     </integernet_varnish>
                 </observers>
-            </cataloginventory_stock_item_save_after>
+            </model_delete_after>
         </events>
         <integernet_varnish>
             <invalidate>
-                <checkout>integernet_varnish/invalidate_checkout</checkout>
-                <compare>integernet_varnish/invalidate_compare</compare>
-                <currency>integernet_varnish/invalidate_currency</currency>
-                <customer>integernet_varnish/invalidate_customer</customer>
-                <message>integernet_varnish/invalidate_message</message>
-                <poll>integernet_varnish/invalidate_poll</poll>
-                <recently_compared>integernet_varnish/invalidate_recentlyCompared</recently_compared>
-                <recently_viewed>integernet_varnish/invalidate_recentlyViewed</recently_viewed>
-                <store>integernet_varnish/invalidate_store</store>
+                <response>
+                    <checkout>integernet_varnish/invalidate_response_checkout</checkout>
+                    <compare>integernet_varnish/invalidate_response_compare</compare>
+                    <currency>integernet_varnish/invalidate_response_currency</currency>
+                    <customer>integernet_varnish/invalidate_response_customer</customer>
+                    <message>integernet_varnish/invalidate_response_message</message>
+                    <poll>integernet_varnish/invalidate_response_poll</poll>
+                    <recently_compared>integernet_varnish/invalidate_response_recentlyCompared</recently_compared>
+                    <recently_viewed>integernet_varnish/invalidate_response_recentlyViewed</recently_viewed>
+                    <store>integernet_varnish/invalidate_response_store</store>
+                </response>
+                <resource>
+                    <product>integernet_varnish/invalidate_resource_product</product>
+                    <stock>integernet_varnish/invalidate_resource_stock</stock>
+                    <category>integernet_varnish/invalidate_resource_category</category>
+                    <cms>integernet_varnish/invalidate_resource_cms</cms>
+                </resource>
             </invalidate>
         </integernet_varnish>
         <ignore_user_agents>

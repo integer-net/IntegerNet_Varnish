@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Customer implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_RecentlyCompared implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_Customer implements IntegerNet_Varnish
      */
     public function getCode()
     {
-        return 'customer';
+        return 'recently_compared';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_Customer implements IntegerNet_Varnish
      */
     public function getName()
     {
-        return 'Customer';
+        return 'Recently Compared';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_Customer implements IntegerNet_Varnish
      */
     public function getDescription()
     {
-        return 'Customer is logged in';
+        return 'Products on recently compared list';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_Customer implements IntegerNet_Varnish
      */
     public function hasData()
     {
-        return (bool)Mage::helper('customer')->getCustomer()->getId();
+        return (bool)Mage::app()->getLayout()->createBlock('reports/product_compared')->getCount();
     }
 
     /**

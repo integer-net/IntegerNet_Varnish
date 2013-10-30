@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-interface IntegerNet_Varnish_Model_Invalidate_Interface
+interface IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
     /**
      * @return mixed

@@ -11,7 +11,7 @@
 /**
  * Enter description here ...
  */
-class IntegerNet_Varnish_Model_Invalidate_Checkout implements IntegerNet_Varnish_Model_Invalidate_Interface
+class IntegerNet_Varnish_Model_Invalidate_Response_RecentlyViewed implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
 
     /**
@@ -19,7 +19,7 @@ class IntegerNet_Varnish_Model_Invalidate_Checkout implements IntegerNet_Varnish
      */
     public function getCode()
     {
-        return 'checkout';
+        return 'recently_viewed';
     }
 
     /**
@@ -27,7 +27,7 @@ class IntegerNet_Varnish_Model_Invalidate_Checkout implements IntegerNet_Varnish
      */
     public function getName()
     {
-        return 'Checkout';
+        return 'Recently Viewed';
     }
 
     /**
@@ -35,7 +35,7 @@ class IntegerNet_Varnish_Model_Invalidate_Checkout implements IntegerNet_Varnish
      */
     public function getDescription()
     {
-        return 'Items in cart';
+        return 'Products on recently viewed list';
     }
 
     /**
@@ -43,7 +43,7 @@ class IntegerNet_Varnish_Model_Invalidate_Checkout implements IntegerNet_Varnish
      */
     public function hasData()
     {
-        return (bool)Mage::helper('checkout')->getQuote()->hasItems();
+        return (bool)Mage::app()->getLayout()->createBlock('reports/product_viewed')->getCount();
     }
 
     /**
