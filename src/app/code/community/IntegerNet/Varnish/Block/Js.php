@@ -1,42 +1,29 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Block_Js
  */
 class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
 {
 
-    /**
-     * @return string
-     */
-    public function getFetchUrl()
-    {
-        return $this->getUrl('integernetvarnish/fetch/index');
-    }
 
     /**
      * @return string
      */
-    public function getRequestUri()
+    public function getTemplate()
     {
-        return base64_encode(Mage::app()->getRequest()->getServer('REQUEST_URI'));
+        return parent::getTemplate() ? parent::getTemplate() : 'integernet_varnish/js.phtml';
     }
 
-    /**
-     * @return string
-     */
-    public function getHandler()
-    {
-        return base64_encode(implode(',', Mage::app()->getLayout()->getUpdate()->getHandles()));
-    }
 
     /**
      * Render block HTML
@@ -45,11 +32,13 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
-        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
-        $lifetime = Mage::helper('integernet_varnish')->getLifetime();
+        /** @var IntegerNet_Varnish_Model_CacheControl $cacheControl */
+        $cacheControl = Mage::getSingleton('integernet_varnish/cacheControl');
 
-        if ($enable && $holePunching && $lifetime) {
+        if ($cacheControl->getConfig()->isEnabled()
+            && $cacheControl->getConfig()->isDynamicBlock()
+            && $cacheControl->getLifetime()
+        ) {
             return parent::_toHtml();
         }
 

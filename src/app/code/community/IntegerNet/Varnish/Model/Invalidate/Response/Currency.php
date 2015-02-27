@@ -1,18 +1,20 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Model_Invalidate_Response_Currency
  */
 class IntegerNet_Varnish_Model_Invalidate_Response_Currency implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
+
 
     /**
      * @return string
@@ -22,6 +24,7 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Currency implements IntegerNe
         return 'currency';
     }
 
+
     /**
      * @return string
      */
@@ -30,13 +33,6 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Currency implements IntegerNe
         return 'Currency';
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return 'None default currency';
-    }
 
     /**
      * @return bool
@@ -44,13 +40,5 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Currency implements IntegerNe
     public function hasData()
     {
         return Mage::app()->getStore()->getDefaultCurrencyCode() != Mage::app()->getStore()->getCurrentCurrencyCode();
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasChange()
-    {
-        return false;
     }
 }

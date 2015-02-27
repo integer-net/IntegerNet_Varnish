@@ -1,18 +1,20 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Block_Adminhtml_Cache_Additional
  */
 class IntegerNet_Varnish_Block_Adminhtml_Cache_Additional extends Mage_Adminhtml_Block_Template
 {
+
+
     /**
      * Get clean cache url
      *
@@ -23,6 +25,7 @@ class IntegerNet_Varnish_Block_Adminhtml_Cache_Additional extends Mage_Adminhtml
         return $this->getUrl('*/integernetvarnish_index/index');
     }
 
+
     /**
      * Check if block can be displayed
      *
@@ -30,6 +33,15 @@ class IntegerNet_Varnish_Block_Adminhtml_Cache_Additional extends Mage_Adminhtml
      */
     public function canShowIndexButton()
     {
-        return Mage::helper('integernet_varnish/config')->isEnabled() && Mage::getSingleton('admin/session')->isAllowed('system/cache/integernet_varnish_index');
+        return Mage::getSingleton('integernet_varnish/config')->isEnabled() && Mage::getSingleton('admin/session')->isAllowed('system/cache/integernet_varnish_index');
+    }
+
+
+    /**
+     * @return null|string
+     */
+    protected function _toHtml()
+    {
+        return $this->canShowIndexButton() ? parent::_toHtml() : null;
     }
 }

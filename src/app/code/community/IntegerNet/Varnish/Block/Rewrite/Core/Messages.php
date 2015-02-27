@@ -1,20 +1,38 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Block_Rewrite_Core_Messages
+ *
+ * Die Ausgabe Session Mesages erfolgt über die Methode getGroupedHtml
+ * da beim Aufruf der Methode kein core_block_abstract_to_html_after Event
+ * ...
  */
 class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Messages
 {
+
+
+    /**
+     * @var bool
+     */
+    protected static $_dispatchEvent = true;
+
+
     /**
      * Retrieve messages in HTML format grouped by type
+     *
+     * Dispatch core_block_abstract_to_html_after event
+     * to wrap HTML output for IntegerNet_Varnish dynamic blocks
+     *
+     * @see IntegerNet_Varnish_Block_Rewrite_Core_Messages::toHtml()
      *
      * @return  string
      */
@@ -22,44 +40,32 @@ class IntegerNet_Varnish_Block_Rewrite_Core_Messages extends Mage_Core_Block_Mes
     {
         $html = parent::getGroupedHtml();
 
-        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
-        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
+        if (self::$_dispatchEvent && Mage::app()->getStore()->getId() !== Mage_Core_Model_App::ADMIN_STORE_ID) {
 
-        if ($enable && $holePunching) {
-            $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
-            $nameInLayout = $this->getNameInLayout();
+            $transportObject = new Varien_Object();
+            $transportObject->setData('html', $html);
 
-            if (array_key_exists($nameInLayout, $blockWrapInfo)) {
-                $html = sprintf('<div id="%s">%s</div>', Mage::helper('integernet_varnish')->getWrapId($nameInLayout), $html);
-            }
+            Mage::dispatchEvent('core_block_abstract_to_html_after', array(
+                'block' => $this,
+                'transport' => $transportObject
+            ));
+
+            $html = $transportObject->getData('html');
         }
+
+        self::$_dispatchEvent = true;
 
         return $html;
     }
 
+
     /**
-     *
-     *
      * @return string
      */
     protected function _toHtml()
     {
-        $html = parent::_toHtml();
+        self::$_dispatchEvent = false;
 
-        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
-        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
-
-        if ($enable && $holePunching) {
-            $blockWrapInfo = Mage::helper('integernet_varnish/config')->getBlockWrapInfo();
-            $nameInLayout = $this->getNameInLayout();
-
-            if (array_key_exists($nameInLayout, $blockWrapInfo)) {
-                if (strpos($html, Mage::helper('integernet_varnish')->getWrapId($nameInLayout)) !== false) {
-                    $this->setFrameTags(null);
-                }
-            }
-        }
-
-        return $html;
+        return parent::_toHtml();
     }
 }

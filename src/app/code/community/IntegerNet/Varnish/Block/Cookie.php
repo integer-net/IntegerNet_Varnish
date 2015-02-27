@@ -1,18 +1,30 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Block_Cookie
  */
 class IntegerNet_Varnish_Block_Cookie extends Mage_Core_Block_Template
 {
+
+
+    /**
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return parent::getTemplate() ? parent::getTemplate() : 'pagecache/cookie.phtml';
+    }
+
+
     /**
      * Render block HTML
      *
@@ -20,7 +32,7 @@ class IntegerNet_Varnish_Block_Cookie extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if(Mage::helper('integernet_varnish/config')->isEnabled()) {
+        if (Mage::getSingleton('integernet_varnish/config')->isEnabled()) {
             return null;
         }
 

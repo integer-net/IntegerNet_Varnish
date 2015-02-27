@@ -1,18 +1,21 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Model_System_Config_Source_Invalidate
  */
 class IntegerNet_Varnish_Model_System_Config_Source_Invalidate
 {
+
+
     /**
      * @return array
      */
@@ -20,8 +23,12 @@ class IntegerNet_Varnish_Model_System_Config_Source_Invalidate
     {
         $options = array();
 
-        /** @var $invalidateModel IntegerNet_Varnish_Model_Invalidate_Interface */
-        foreach (Mage::helper('integernet_varnish/config')->getInvalidateResponseModels() as $invalidateModel) {
+        /** @var IntegerNet_Varnish_Model_Config $config */
+        $config = Mage::getSingleton('integernet_varnish/config');
+
+        /** @var $invalidateModel IntegerNet_Varnish_Model_Invalidate_Response_Interface */
+        foreach ($config->getInvalidateResponseModels() as $invalidateModel) {
+
             $options[] = array('value' => $invalidateModel->getCode(), 'label' => $invalidateModel->getName());
         }
 

@@ -1,16 +1,12 @@
 <?xml version="1.0"?>
 <!--
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
- */
-
-/**
- * Enter description here ...
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 -->
 <config>
@@ -39,11 +35,50 @@
                                 <control>integernet_varnish</control>
                             </depends>
                         </integernet_varnish_cache_routes>
+                        <integernet_varnish_headers_add translate="label comment" module="integernet_varnish">
+                            <label>Header Add/Update</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_headerAdd</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_headerAdd</backend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                            </depends>
+                        </integernet_varnish_headers_add>
+                        <integernet_varnish_headers_remove translate="label comment" module="integernet_varnish">
+                            <label>Header Remove</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_headerRemove</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_headerRemove</backend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                            </depends>
+                        </integernet_varnish_headers_remove>
+                        <integernet_varnish_inject_form_key_routes translate="label comment" module="integernet_varnish">
+                            <label>Inject Form Key Routes</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_formKey</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_param</backend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                            </depends>
+                        </integernet_varnish_inject_form_key_routes>
                         <integernet_varnish_bypass_states translate="label comment" module="integernet_varnish">
-                            <label>Cache Bypass Request</label>
+                            <label>Cache Bypass State</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>integernet_varnish/system_config_source_invalidate</source_model>
-                            <sort_order>120</sort_order>
+                            <sort_order>140</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -57,7 +92,7 @@
                             <label>Disqualified States</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>integernet_varnish/system_config_source_invalidate</source_model>
-                            <sort_order>130</sort_order>
+                            <sort_order>150</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -67,11 +102,11 @@
                                 <control>integernet_varnish</control>
                             </depends>
                         </integernet_varnish_disqualified_states>
-                        <integernet_varnish_disqualified_params translate="label comment" module="integernet_varnish">
-                            <label>Disqualified Params</label>
-                            <frontend_model>integernet_varnish/system_config_form_field_param</frontend_model>
-                            <backend_model>integernet_varnish/system_config_backend_param</backend_model>
-                            <sort_order>140</sort_order>
+                        <integernet_varnish_disqualified_paths translate="label comment" module="integernet_varnish">
+                            <label>Disqualified Paths</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_path</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_path</backend_model>
+                            <sort_order>155</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -79,11 +114,11 @@
                                 <enabled>1</enabled>
                                 <control>integernet_varnish</control>
                             </depends>
-                        </integernet_varnish_disqualified_params>
-                        <integernet_varnish_hole_punching translate="label comment" module="integernet_varnish">
-                            <label>Hole Punching</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </integernet_varnish_disqualified_paths>
+                        <integernet_varnish_allowed_params translate="label comment" module="integernet_varnish">
+                            <label>Allowed Params</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_param</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_param</backend_model>
                             <sort_order>160</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
@@ -92,11 +127,11 @@
                                 <enabled>1</enabled>
                                 <control>integernet_varnish</control>
                             </depends>
-                        </integernet_varnish_hole_punching>
-                        <integernet_varnish_hole_blocks translate="label comment" module="integernet_varnish">
-                            <label>Dynamic Blocks</label>
-                            <frontend_model>integernet_varnish/system_config_form_field_block</frontend_model>
-                            <backend_model>integernet_varnish/system_config_backend_block</backend_model>
+                        </integernet_varnish_allowed_params>
+                        <integernet_varnish_https_allowed translate="label comment" module="integernet_varnish">
+                            <label>HTTPS Allowed</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>170</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
@@ -104,12 +139,12 @@
                             <depends>
                                 <enabled>1</enabled>
                                 <control>integernet_varnish</control>
-                                <integernet_varnish_hole_punching>1</integernet_varnish_hole_punching>
                             </depends>
-                        </integernet_varnish_hole_blocks>
-                        <integernet_varnish_hole_js translate="label comment" module="integernet_varnish">
-                            <label>Dynamic Blocks JS</label>
-                            <frontend_type>textarea</frontend_type>
+                        </integernet_varnish_https_allowed>
+                        <integernet_varnish_dynamic_block translate="label comment" module="integernet_varnish">
+                            <label>Dynamic Block</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>180</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
@@ -117,12 +152,38 @@
                             <depends>
                                 <enabled>1</enabled>
                                 <control>integernet_varnish</control>
-                                <integernet_varnish_hole_punching>1</integernet_varnish_hole_punching>
                             </depends>
-                        </integernet_varnish_hole_js>
+                        </integernet_varnish_dynamic_block>
+                        <integernet_varnish_dynamic_blocks translate="label comment" module="integernet_varnish">
+                            <label>Dynamic Blocks</label>
+                            <frontend_model>integernet_varnish/system_config_form_field_dynamicBlock</frontend_model>
+                            <backend_model>integernet_varnish/system_config_backend_dynamicBlock</backend_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_dynamic_block>1</integernet_varnish_dynamic_block>
+                            </depends>
+                        </integernet_varnish_dynamic_blocks>
+                        <integernet_varnish_dynamic_block_js translate="label comment" module="integernet_varnish">
+                            <label>Dynamic Blocks JS</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_dynamic_block>1</integernet_varnish_dynamic_block>
+                            </depends>
+                        </integernet_varnish_dynamic_block_js>
                         <integernet_varnish_purge_server translate="label comment" module="integernet_varnish">
                             <label>Purge Server</label>
-                            <sort_order>190</sort_order>
+                            <sort_order>210</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -133,7 +194,7 @@
                         </integernet_varnish_purge_server>
                         <integernet_varnish_purge_url translate="label comment" module="integernet_varnish">
                             <label>Purge URL</label>
-                            <sort_order>200</sort_order>
+                            <sort_order>220</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -142,11 +203,60 @@
                                 <control>integernet_varnish</control>
                             </depends>
                         </integernet_varnish_purge_url>
+                        <integernet_varnish_build translate="label comment" module="integernet_varnish">
+                            <label>Build</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>integernet_varnish/system_config_source_build</source_model>
+                            <sort_order>230</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                            </depends>
+                        </integernet_varnish_build>
+                        <integernet_varnish_build_shell_limit translate="label comment" module="integernet_varnish">
+                            <label>Build Limit</label>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_build>1</integernet_varnish_build>
+                            </depends>
+                        </integernet_varnish_build_shell_limit>
+                        <integernet_varnish_build_php_limit translate="label comment" module="integernet_varnish">
+                            <label>Build Limit</label>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_build>2</integernet_varnish_build>
+                            </depends>
+                        </integernet_varnish_build_php_limit>
+                        <integernet_varnish_build_php_timeout translate="label comment" module="integernet_varnish">
+                            <label>Build Timeout (s)</label>
+                            <sort_order>250</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_build>2</integernet_varnish_build>
+                            </depends>
+                        </integernet_varnish_build_php_timeout>
                         <integernet_varnish_debug_mode translate="label comment" module="integernet_varnish">
                             <label>Debug Mode</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>220</sort_order>
+                            <sort_order>260</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>

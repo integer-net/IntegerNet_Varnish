@@ -1,18 +1,20 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Model_Invalidate_Response_Message
  */
 class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet_Varnish_Model_Invalidate_Response_Interface
 {
+
 
     /**
      * @return string
@@ -22,6 +24,7 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet
         return 'message';
     }
 
+
     /**
      * @return string
      */
@@ -30,13 +33,6 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet
         return 'Message';
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
-    {
-        return 'Message';
-    }
 
     /**
      * @return bool
@@ -57,19 +53,11 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet
 
             /** @var $sessionModel Mage_Core_Model_Session */
             $sessionModel = Mage::getSingleton($sessionModelName);
-            if($sessionModel->getMessages()->count()) {
+            if ($sessionModel->getMessages()->count()) {
                 return true;
             }
         }
 
-        return false;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasChange()
-    {
         return false;
     }
 }

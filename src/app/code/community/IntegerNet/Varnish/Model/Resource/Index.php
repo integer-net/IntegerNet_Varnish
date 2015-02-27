@@ -1,18 +1,27 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Model_Resource_Index
  */
 class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_Db_Abstract
 {
+
+
+    /**
+     *
+     */
+    const DATE_FORMAT = 'Y-m-d H:i:s';
+
+
     /**
      *
      */
@@ -21,79 +30,232 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
         $this->_init('integernet_varnish/index', 'entity_id');
     }
 
+
     /**
-     * @param array $urls
-     * @return $this
+     * @param $url URL
+     *
+     * @return string hashed URL
      */
-    public function updateUrls(array $urls)
+    public function _getUrlKey($url)
     {
-        foreach ($urls as $key => $url) {
-            $affected = $this->_getWriteAdapter()->update(
-                $this->getMainTable(),
-                $url,
-                array('url_key = ?' => $key)
-            );
-
-            if($affected) {
-                unset($urls[$key]);
-            }
-        }
-
-        return $this;
+        return md5($url);
     }
 
+
     /**
-     * @param array $urls
-     * @return array
+     * @param string $url URL
+     * @param string $route Route
+     * @param int $lifetime Lifetime
+     *
+     * @return int The number of affected rows
      */
-    public function addUrls(array $urls)
+    public function indexUrl($url, $route, $lifetime)
     {
-        foreach ($urls as $url) {
-            $this->_getWriteAdapter()->insertOnDuplicate(
+        $affected = $this->_getWriteAdapter()->update(
+            $this->getMainTable(),
+            array(
+                'updated_at' => date(self::DATE_FORMAT),
+                'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
+                'purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO,
+            ),
+            array('url_key = ?' => $this->_getUrlKey($url))
+        );
+
+        if (!$affected) {
+
+            $affected = $this->_getWriteAdapter()->insert(
                 $this->getMainTable(),
-                $url
+                array(
+                    'added_at' => now(),
+                    'updated_at' => date(self::DATE_FORMAT),
+                    'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
+                    'url_key' => $this->_getUrlKey($url),
+                    'route' => $route,
+                    'url' => $url,
+                )
             );
         }
 
-        return $this;
+        return $affected;
     }
 
+
     /**
-     * @param $limit
-     * @return array
+     * @param string $url URL
+     *
+     * @return int The number of affected rows
      */
-    public function getExpiredUrls($limit)
+    public function countUrl($url)
+    {
+        return $this->_getWriteAdapter()->update(
+            $this->getMainTable(),
+            array('count' => new Zend_Db_Expr('`count` + 1')),
+            array('url_key = ?' => $this->_getUrlKey($url))
+        );
+    }
+
+
+    /**
+     * @return int The number of affected rows
+     */
+    public function setExpireAll()
+    {
+        return $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('expire_at' => date(self::DATE_FORMAT, time() - 1))
+        );
+    }
+
+
+    /**
+     * @param int|array $id Index entity ID
+     *
+     * @return int The number of affected rows
+     */
+    public function setExpireById($id)
+    {
+        $id = is_array($id) ? $id : array($id);
+
+        return $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('expire_at' => date(self::DATE_FORMAT, time() - 1)),
+            array('entity_id IN (?)' => $id)
+        );
+    }
+
+
+    /**
+     * @param int $limit
+     *
+     * @return array ID URL pare list
+     */
+    public function getExpiredUrls($limit = 100)
     {
         $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), array('entity_id', 'url'));
-        $select->order(array('priority ASC', 'expire ASC'));
-        $select->where('expire <= ?', date('Y-m-d H:i:s'));
+        $select->order(array('priority ASC', 'count DESC', 'expire_at ASC'));
+        $select->where('expire_at <= ?', date(self::DATE_FORMAT));
         $select->limit($limit);
 
         return $this->_getReadAdapter()->fetchPairs($select);
     }
 
+
     /**
-     * @param $limit
-     * @return array
+     * @param int|array $id Index entity ID
+     *
+     * @return int The number of affected rows
      */
-    public function setAllExpire()
+    public function setPurgeFlagById($id)
     {
-        $select = $this->_getReadAdapter()->update(
+        return $this->_getReadAdapter()->update(
             $this->getMainTable(),
-            array('expire' => date('Y-m-d H:i:s'))
+            array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_YES),
+            array('entity_id IN (?)' => $id)
         );
-
-        return $this;
     }
+
 
     /**
-     * @param array $ids
-     * @return $this
+     * @return int The number of affected rows
      */
-    public function removeByIds(array $ids)
+    public function unsetPurgeFlagAll()
     {
-        $this->_getWriteAdapter()->delete($this->getMainTable(), array('entity_id IN (?)' => $ids));
-
-        return $this;
+        return $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO)
+        );
     }
+
+
+    /**
+     * @param int|array $id Index entity ID
+     *
+     * @return int The number of affected rows
+     */
+    public function unsetPurgeFlagById($id)
+    {
+        return $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO),
+            array('entity_id IN (?)' => $id)
+        );
+    }
+
+
+    /**
+     * @param int $limit
+     *
+     * @return array ID URL pare list
+     */
+    public function getPurgeFlaggedUrls($limit = 100)
+    {
+        $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), array('entity_id', 'url'));
+        $select->order(array('count DESC'));
+        $select->where('purge_flag = ?', IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_YES);
+        $select->limit($limit);
+
+        return $this->_getReadAdapter()->fetchPairs($select);
+    }
+
+
+    /**
+     * @param int|array $id Index entity ID
+     * @param int $priority
+     *
+     * @return int The number of affected rows
+     */
+    public function setPriority($id, $priority)
+    {
+        $id = is_array($id) ? $id : array($id);
+
+        return $this->_getReadAdapter()->update(
+            $this->getMainTable(),
+            array('priority' => (int)$priority),
+            array('entity_id IN (?)' => $id)
+        );
+    }
+
+
+    /**
+     * @param int|array $id Index entity ID
+     *
+     * @return int The number of affected rows
+     */
+    public function removeById($id)
+    {
+        $id = is_array($id) ? $id : array($id);
+
+        return $this->_getWriteAdapter()->delete(
+            $this->getMainTable(),
+            array('entity_id IN (?)' => $id)
+        );
+    }
+
+
+    /**
+     * @param string $url URL
+     *
+     * @return int The number of affected rows
+     */
+    public function removeByUrl($url)
+    {
+        return $this->_getWriteAdapter()->delete(
+            $this->getMainTable(),
+            array('url_key = ?' => $this->_getUrlKey($url))
+        );
+    }
+
+
+    /**
+     * @return array Routes list
+     */
+    public function getRouteOptions()
+    {
+        $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), 'route');
+        $select->order(array('route ASC'));
+        $select->distinct();
+
+        return $this->_getReadAdapter()->fetchCol($select);
+    }
+
 }

@@ -1,153 +1,80 @@
 <?php
 /**
- * integer_net Magento Module
+ * integer_net GmbH Magento Module
  *
- * @category IntegerNet
- * @package IntegerNet_<Module>
- * @copyright  Copyright (c) 2012-2013 integer_net GmbH (http://www.integer-net.de/)
- * @author Viktor Franz <vf@integer-net.de>
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
  */
 
+
 /**
- * Enter description here ...
+ * Class IntegerNet_Varnish_Model_Observer
  */
 class IntegerNet_Varnish_Model_Observer
 {
+
+
     /**
+     * any save or delete event
+     *
      * @param Varien_Event_Observer $observer
      */
     public function resourceChange(Varien_Event_Observer $observer)
     {
-        if (Mage::helper('integernet_varnish/config')->isEnabled()) {
+        $object = $observer->getData('object');
 
-            /** @var $invalidateResourceModels IntegerNet_Varnish_Model_Invalidate_Resource_Interface */
-            foreach(Mage::helper('integernet_varnish/config')->getInvalidateResourceModels() as $invalidateResourceModels) {
-                $invalidateResourceModels->invalidate($observer->getData('object'));
-            }
-        }
+        Mage::getSingleton('integernet_varnish/invalidate_resource')->invalidate($object);
     }
+
 
     /**
      * @param Varien_Event_Observer $observer
+     *
+     * @see Mage_Core_Controller_Varien_Action::preDispatch()
      */
     public function controllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        /** @var $controller Mage_Core_Controller_Front_Action */
-        $controller = $observer->getEvent()->getControllerAction();
+        Mage::getSingleton('integernet_varnish/formKey')->updateFormKey();
 
-        /** @var $helper IntegerNet_Varnish_Helper_Data */
-        $helper = Mage::helper('integernet_varnish');
+        if (!Mage::getSingleton('integernet_varnish/dynamicBlock')->predispatchDynamicBlockRequest()) {
 
-        /** @var $helperConfig IntegerNet_Varnish_Helper_Config */
-        $helperConfig = Mage::helper('integernet_varnish/config');
+            Mage::getSingleton('integernet_varnish/cacheControl')->updateResponseHeaders();
+        }
 
-        if ($helperConfig->isEnabled() && $controller->getResponse()->canSendHeaders()) {
+        /**
+         * event controller_action_predispatch/observers/pagecache
+         * is disables by IntegerNet_Varnish module
+         */
+        if (!Mage::getSingleton('integernet_varnish/config')->isEnabled()) {
 
-            if ($controller->getRequest()->isPost() && $controller->getRequest()->getParam('dyn_block')) {
-
-                Mage::app()->getFrontController()->setNoRender(true);
-
-            } else {
-                if ($bypass = $helper->isBypass()) {
-
-                    //if(!$helper->hasNoCacheCookie()) {
-                    //    Mage::app()->getResponse()->setRedirect(Mage::helper('core/url')->getCurrentUrl(), 200);
-                    //}
-
-                    $helper->setNoCacheCookie();
-                    $helper->debug('external_no_cache', $bypass);
-
-                } elseif ($helper->hasNoCacheCookie()) {
-
-                    $helper->unsetNoCacheCookie();
-                    $helper->debug('external_no_cache', '0');
-
-                } else {
-
-                    $disqualified = $helper->isDisqualified();
-                    $lifetime = $helper->getLifetime();
-
-                    if (Mage::app()->getRequest()->isGet() && !$disqualified && $lifetime) {
-
-                        header('Set-Cookie:'); // Unset Set-Cookie header
-                        Mage::app()->getResponse()->setHeader('aoestatic', 'cache', true);
-                        Mage::app()->getResponse()->setHeader('Cache-Control', sprintf('max-age=%s', $lifetime), true);
-
-                        Mage::getModel('integernet_varnish/index')->addUrl(Mage::helper('core/url')->getCurrentUrl(), $controller->getFullActionName('/'), $lifetime);
-
-                        $helper->debug('lifetime', $lifetime);
-
-                    } elseif ($disqualified) {
-                        $helper->debug('disqualified', $disqualified);
-                    } else {
-                        $helper->debug('No-Cache');
-                    }
-                }
-            }
-        } elseif (!$helperConfig->isEnabled()) {
             Mage::getSingleton('pagecache/observer')->processPreDispatch($observer);
         }
     }
 
+
     /**
      * @param Varien_Event_Observer $observer
+     *
+     * @see Mage_Core_Controller_Varien_Action::postDispatch()
      */
     public function controllerActionPostdispatch(Varien_Event_Observer $observer)
     {
-        /** @var $controller Mage_Core_Controller_Front_Action */
-        $controller = $observer->getEvent()->getControllerAction();
-
-        /** @var $helper IntegerNet_Varnish_Helper_Data */
-        $helper = Mage::helper('integernet_varnish');
-
-        /** @var $helperConfig IntegerNet_Varnish_Helper_Config */
-        $helperConfig = Mage::helper('integernet_varnish/config');
-
-        if ($helperConfig->isEnabled()
-            && $controller->getResponse()->canSendHeaders()
-            && $controller->getRequest()->isPost()
-            && $controller->getRequest()->getParam('dyn_block')
-        ) {
-
-            $response = array(
-                'blocks' => array(),
-                'script' => Mage::helper('integernet_varnish/config')->getHolePunchingScript(),
-            );
-
-            Mage::app()->setUseSessionInUrl(false);
-
-            foreach ($helperConfig->getBlockWrapInfo() as $name => $info) {
-
-                /** @var $block Mage_Core_Block_Abstract */
-                $block = $controller->getLayout()->getBlock($name);
-                if ($block) {
-                    $blockWrapId = $helper->getWrapId($name);
-
-                    if ($block instanceof Mage_Core_Block_Messages && $block->getMessageCollection()->count()) {
-                        $response['blocks']['a'][$blockWrapId] = $block->toHtml();
-                    } else {
-                        $response['blocks']['b'][$blockWrapId] = $block->toHtml();
-                    }
-                }
-            }
-
-            $response = Mage::helper('core')->jsonEncode($response);
-
-            $controller->getResponse()->setHeader('Content-Type', 'application/json');
-            $controller->getResponse()->setBody($response);
-        }
+        Mage::getSingleton('integernet_varnish/dynamicBlock')->postdispatchDynamicBlockRequest();
     }
+
 
     /**
      * @param Varien_Event_Observer $observer
+     *
+     * @see Mage_Core_Block_Abstract::toHtml()
      */
-    public function coreBlockAbstractToHtmlBefore(Varien_Event_Observer $observer)
+    public function coreBlockAbstractToHtmlAfter(Varien_Event_Observer $observer)
     {
-        $enable = Mage::helper('integernet_varnish/config')->isEnabled();
-        $holePunching = Mage::helper('integernet_varnish/config')->isHolePunching();
+        $block = $observer->getData('block');
+        $transport = $observer->getData('transport');
 
-        if ($enable && $holePunching) {
-            Mage::helper('integernet_varnish')->wrapBlock($observer->getData('block'));
-        }
+        Mage::getSingleton('integernet_varnish/dynamicBlock')->wrapDynamicBlock($block, $transport);
     }
 }
