@@ -1,0 +1,10 @@
+src/app/code/community/IntegerNet/Varnish/*                             app/code/community/IntegerNet/Varnish
+src/app/design/adminhtml/default/default/layout/integernet_varnish.xml  app/design/adminhtml/default/default/layout/integernet_varnish.xml
+src/app/design/adminhtml/default/default/template/integernet_varnish/*  app/design/adminhtml/default/default/template/integernet_varnish
+src/app/design/frontend/base/default/layout/integernet_varnish.xml      app/design/frontend/base/default/layout/integernet_varnish.xml
+src/app/design/frontend/base/default/template/integernet_varnish/*      app/design/frontend/base/default/template/integernet_varnish
+src/app/etc/modules/IntegerNet_Varnish.xml                              app/etc/modules/IntegerNet_Varnish.xml
+src/app/locale/de_DE/IntegerNet_Varnish.csv                             app/locale/de_DE/IntegerNet_Varnish.csv
+src/app/locale/en_US/IntegerNet_Varnish.csv                             app/locale/en_US/IntegerNet_Varnish.csv
+src/js/integernet_varnish/*                                             js/integernet_varnish
+src/shell/integernet_varnish.php                                        shell/integernet_varnish.php

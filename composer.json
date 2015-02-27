@@ -1,0 +1,35 @@
+{
+  "name": "integer_net/integernet_varnish",
+  "description": "Magento External Full Page Cache with Varnish",
+  "version": "1.0.0",
+  "type": "magento-module",
+  "keywords": [
+    "magento",
+    "varnish",
+    "cache",
+    "fullpage"
+  ],
+  "homepage": "http://www.integer-net.de/modul/magento/integernet_varnish.html",
+  "time": "2015-02-27",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "integer_net GmbH",
+      "email": "info@integer-net.de",
+      "homepage": "http://www.integer-net.de/",
+      "role": "Company"
+    },
+    {
+      "name": "Viktor Franz",
+      "email": "vf@integer-net.de",
+      "homepage": "http://www.integer-net.de/",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "info@integer-net.de"
+  },
+  "require": {
+    "magento-hackathon/magento-composer-installer": "*"
+  }
+}
