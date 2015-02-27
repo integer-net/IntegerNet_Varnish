@@ -1,7 +1,7 @@
 IntegerNet_Varnish
 ==================
 
-Varnish Full-PageCache Implementierung   
+Magento External Full Page Cache with Varnish
 
 Infos
 -----
@@ -10,6 +10,7 @@ Infos
 
 Description
 -----------
+
 
 Requirements
 ------------
@@ -27,13 +28,29 @@ Installation Instructions
 2. Clear the cache, logout from the admin panel and then login again.
 3. Configure the extension under System ***System >> Configuration >> Advanced/System >> External Full Page Cache Settings***
 
-Uninstallation
+Uninstallation Instructions
 --------------
-1. Remove all extension files from your Magento installation
+1. Set Magento "Enable External Cache" option under ***System >> Configuration >> Advanced/System >> External Full Page Cache Settings*** to ***No***
+2. Disable IntegerNet_Varnish module by deleting the `app/etc/modules/IntegerNet_Varnish.xml` File
+3. Clear the cache, logout from the admin panel and then login again.
+4. delete folowing IntegerNet_Varnish module files and directories
+- app/etc/modules/IntegerNet_Varnish.xml
+- app/code/community/IntegerNet/Varnish
+- app/design/adminhtml/default/default/layout/integernet_varnish.xml
+- app/design/adminhtml/default/default/template/integernet_varnish
+- app/design/frontend/base/default/layout/integernet_varnish.xml
+- app/design/frontend/base/default/template/integernet_varnish
+- app/locale/de_DE/IntegerNet_Varnish.csv
+- app/locale/en_US/IntegerNet_Varnish.csv
+- js/integernet_varnish
+- shell/integernet_varnish.php
+- var/integernet_varnish
+5. Remover entitys from database table `<table-prefix>core_config_data` path stars with `system/external_page_cache/integernet_varnish_`
+6. Remote table `<table-prefix>integernet_varnish_index`
 
 Support
 -------
-If you have any issues with this extension, open an issue on [GitHub](https://github.com/integer-net/RemoveCustomerAccountLinks/issues).
+info@integer-net.de
 
 Developer
 ---------
@@ -43,8 +60,8 @@ Twitter [@integer_net](https://twitter.com/integer_net)
 
 Licence
 -------
-[OSL - Open Software Licence 3.0](http://opensource.org/licenses/osl-3.0.php)
+Proprietary
 
 Copyright
 ---------
-(c) 2013 integer_net GmbH
+(c) 2015 integer_net GmbH
