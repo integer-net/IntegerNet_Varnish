@@ -155,7 +155,7 @@ class IntegerNet_Varnish_Model_Config
             $pageCache = Mage::helper('pagecache');
 
             $enabled = $pageCache->isEnabled();
-            $cacheControlInstance = $pageCache->getCacheControlInstance();
+            $cacheControlInstance = $enabled ? $pageCache->getCacheControlInstance() : null;
 
             $this->_isEnable = $enabled && $cacheControlInstance instanceof IntegerNet_Varnish_Model_Control_Varnish;
         }
