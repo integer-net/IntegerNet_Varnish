@@ -1,0 +1,30 @@
+<?php
+/**
+ * integer_net GmbH Magento Module
+ *
+ * @package    IntegerNet_Varnish
+ * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @author     integer_net GmbH <info@integer-net.de>
+ * @author     Viktor Franz <vf@integer-net.de>
+ */
+
+/**
+ * @var $this IntegerNet_Varnish_Block_Adminhtml_Index_Control
+ */
+?>
+
+<div class="entry-edit" style="margin: 40px 0 0 0">
+    <div class="entry-edit">
+        <div class="entry-edit-head">
+            <h4 class="icon-head head-edit-form fieldset-legend"><?php echo $this->__('Build') ?></h4>
+        </div>
+        <div id="page_base_fieldset" class="fieldset">
+            <div class="hor-scroll">
+                <?php echo $this->getStoreSwitcher() ?>
+                <?php echo $this->getImportProductUrlsButton() ?>
+                <?php echo $this->getImportCategoryUrlsButton() ?>
+                <?php echo $this->getRemoveRedirectUrlsButton() ?>
+            </div>
+        </div>
+    </div>
+</div>

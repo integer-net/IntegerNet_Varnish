@@ -16,7 +16,9 @@ class IntegerNet_Varnish_BuildController extends Mage_Core_Controller_Front_Acti
 {
 
 
-    /** @var  IntegerNet_Varnish_Model_Index_Build_Shell */
+    /**
+     * @var IntegerNet_Varnish_Model_Index_Build_Shell
+     */
     protected $_buildShell;
 
 

@@ -135,6 +135,9 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Grid extends Mage_Adminhtml_Block
     }
 
 
+    /**
+     * @return $this
+     */
     protected function _prepareMassaction()
     {
         $this->setMassactionIdField('id');
