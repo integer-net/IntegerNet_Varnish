@@ -77,7 +77,7 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Control extends Mage_Adminhtml_Bl
                 'label' => Mage::helper('integernet_varnish')->__('Import Product Urls'),
                 'onclick' => sprintf('confirmSetLocation(\'%s\', \'%s\')',
                     $this->__('Are you sure you want to do this?'),
-                    $this->getUrl('*/*/importproductyurls', array('store' => $this->_store))),
+                    $this->getUrl('*/*/importproducturls', array('store' => $this->_store))),
                 'class' => 'add'
             ));
 
