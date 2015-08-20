@@ -63,17 +63,23 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
         if (!$affected) {
 
-            $affected = $this->_getWriteAdapter()->insert(
-                $this->getMainTable(),
-                array(
-                    'added_at' => now(),
-                    'updated_at' => date(self::DATE_FORMAT),
-                    'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
-                    'url_key' => $this->_getUrlKey($url),
-                    'route' => $route,
-                    'url' => $url,
-                )
-            );
+            try {
+
+                $affected = $this->_getWriteAdapter()->insert(
+                    $this->getMainTable(),
+                    array(
+                        'added_at' => now(),
+                        'updated_at' => date(self::DATE_FORMAT),
+                        'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
+                        'url_key' => $this->_getUrlKey($url),
+                        'route' => $route,
+                        'url' => $url,
+                    )
+                );
+
+             } catch(Exception $e) {
+
+            }
         }
 
         return $affected;
