@@ -204,8 +204,8 @@
     <default>
         <system>
             <external_page_cache>
-                <integernet_varnish_headers_add/>
-                <integernet_varnish_headers_remove/>
+                <integernet_varnish_headers_add>a:2:{s:29:"_varnish_header_cache_control";a:2:{s:6:"header";s:13:"Cache-Control";s:5:"value";s:20:"max-age={{lifetime}}";}s:23:"_varnish_header_expires";a:2:{s:6:"header";s:7:"Expires";s:5:"value";s:8:"{{date}}";}}</integernet_varnish_headers_add>
+                <integernet_varnish_headers_remove>a:2:{s:26:"_varnish_header_set_cookie";a:1:{s:6:"header";s:10:"Set-Cookie";}s:22:"_varnish_header_pragma";a:1:{s:6:"header";s:6:"Pragma";}}</integernet_varnish_headers_remove>
                 <integernet_varnish_cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</integernet_varnish_cache_routes>
                 <integernet_varnish_inject_form_key_routes>a:1:{s:18:"_1399473970389_389";a:1:{s:5:"route";s:15:"checkout/cart/*";}}</integernet_varnish_inject_form_key_routes>
                 <integernet_varnish_bypass_states>currency,store</integernet_varnish_bypass_states>
