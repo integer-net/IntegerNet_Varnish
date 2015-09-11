@@ -15,7 +15,6 @@
 class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
 {
 
-
     /**
      * @return string
      */
@@ -43,5 +42,29 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
         }
 
         return null;
+    }
+
+    /**
+     * Returns default dynamic block content as JSON, to be used if not fetch request is made
+     *
+     * /!\ All dynamic blocks with placeholders must have been rendered BEFORE this block,
+     *     which is inserted in the before_body_end container.
+     *
+     * @return string
+     */
+    public function getDefaultBlocksJson()
+    {
+        $renderedDefaultBlocks = Mage::getSingleton('integernet_varnish/dynamicBlock')->getDefaultBlocks();
+        return Mage::helper('core')->jsonEncode($renderedDefaultBlocks);
+    }
+
+    /**
+     * Returns true if current response will not be cached
+     *
+     * @return bool
+     */
+    public function getNotCached()
+    {
+        return ! Mage::getSingleton('integernet_varnish/cacheControl')->getCacheHeadersSet();
     }
 }

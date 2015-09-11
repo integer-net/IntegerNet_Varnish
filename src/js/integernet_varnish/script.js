@@ -18,13 +18,15 @@ IntegerNetVarnish.prototype = {
     /**
      *
      */
-    initialize: function () {
+    initialize: function (fetchBlocks) {
 
         this.isLoaded = false;
         this.script = null;
         this.blocks = null;
 
-        this._fetchBlocks();
+        if (fetchBlocks) {
+            this._fetchBlocks();
+        }
 
         Event.observe(window, 'dom:loaded', function () {
             this.isLoaded = true;

@@ -17,12 +17,17 @@
 class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abstract
 {
 
+    const FETCH_DYNAMIC_BLOCKS_COOKIE_NAME = 'dynamicblocks';
 
     /**
      * /* @var $cookie Mage_Core_Model_Cookie
      */
     protected $_cookie;
 
+    /**
+     * @var bool will be set to true when cache lifetime header is set
+     */
+    protected $_cacheHeadersSet = false;
 
     /**
      *
@@ -80,10 +85,15 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
                     $this->_headersRemove();
                     $this->_headersAdd($lifetime);
                     $this->_addIndex($lifetime);
+                    $this->_cacheHeadersSet = true;
 
                 } else {
 
                     $this->debugHeader('Lifetime', 0);
+                }
+
+                if (! $this->_cacheHeadersSet) {
+                    $this->_cookie->set(self::FETCH_DYNAMIC_BLOCKS_COOKIE_NAME, '1');
                 }
 
             }
@@ -292,4 +302,13 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
             $this->_response->setHeader('X-IntegerNet-Varnish', $message);
         }
     }
+
+    /**
+     * @return boolean
+     */
+    public function getCacheHeadersSet()
+    {
+        return $this->_cacheHeadersSet;
+    }
+
 }
