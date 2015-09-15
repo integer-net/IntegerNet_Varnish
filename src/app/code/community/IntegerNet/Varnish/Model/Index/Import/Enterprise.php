@@ -50,7 +50,7 @@ class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Var
                 ->joinTableToSelect($select, $storeId);
 
             foreach ($index->getReadConnection()->fetchPairs($select) as $categoryId => $requestPath) {
-                $importCount += $index->indexUrl(Mage::getBaseUrl('web') . $requestPath, 'catalog/category/view', -1);
+                $importCount += $index->indexUrl(Mage::app()->getStore($storeId)->getBaseUrl('web') . $requestPath, 'catalog/category/view', -1);
             }
         }
 
@@ -87,7 +87,7 @@ class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Var
                 ->getTableSelect($productCollection->getAllIds(), 0, 1);
 
             foreach ($index->getReadConnection()->fetchPairs($select) as $productId => $requestPath) {
-                $importCount += $index->indexUrl(Mage::getBaseUrl('web') . $requestPath, 'catalog/product/view', -1);
+                $importCount += $index->indexUrl(Mage::app()->getStore($storeId)->getBaseUrl('web') . $requestPath, 'catalog/product/view', -1);
             }
 
             return $importCount;
