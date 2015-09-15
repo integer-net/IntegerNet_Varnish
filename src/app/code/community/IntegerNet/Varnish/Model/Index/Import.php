@@ -12,7 +12,7 @@
 /**
  * Class IntegerNet_Varnish_Model_Index_Import
  */
-class IntegerNet_Varnish_Model_Index_Import
+class IntegerNet_Varnish_Model_Index_Import implements IntegerNet_Varnish_Model_Index_Import_Interface
 {
 
 

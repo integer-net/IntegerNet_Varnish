@@ -96,7 +96,7 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
         try {
             $storeId = $this->getRequest()->getParam('store');
 
-            $affected = Mage::getSingleton('integernet_varnish/index_import')->importCategoryUrl($storeId);
+            $affected = Mage::helper('integernet_varnish')->getIndexImportSingleton()->importCategoryUrl($storeId);
 
             $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('%s Category URls has been imported.', $affected));
 
@@ -116,7 +116,7 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
         try {
             $storeId = $this->getRequest()->getParam('store');
 
-            $affected = Mage::getSingleton('integernet_varnish/index_import')->importProductUrl($storeId);
+            $affected = Mage::helper('integernet_varnish')->getIndexImportSingleton()->importProductUrl($storeId);
 
             $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('%s Product URls has been imported.', $affected));
 
