@@ -22,7 +22,15 @@ class IntegerNet_Varnish_Helper_Enterprise extends Mage_Core_Helper_Abstract
     public function setNoCacheCookie()
     {
         if ($this->isEnterprise113()) {
-            Mage::getSingleton('enterprise_pagecache/cookie')->renew(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE);
+            $cookie   = Mage::getSingleton('core/cookie');
+            $lifetime = Mage::getStoreConfig(Mage_PageCache_Helper_Data::XML_PATH_EXTERNAL_CACHE_LIFETIME);
+            $noCache  = $cookie->get(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE);
+
+            if ($noCache) {
+                $cookie->renew(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE, $lifetime);
+            } else {
+                $cookie->set(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE, 1, $lifetime);
+            }
         }
     }
     /**
@@ -31,7 +39,7 @@ class IntegerNet_Varnish_Helper_Enterprise extends Mage_Core_Helper_Abstract
     public function unsetNoCacheCookie()
     {
         if ($this->isEnterprise113()) {
-            Mage::getSingleton('enterprise_pagecache/cookie')->delete(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE);
+            Mage::getSingleton('core/cookie')->delete(Enterprise_PageCache_Model_Processor::NO_CACHE_COOKIE);
         }
     }
 }
