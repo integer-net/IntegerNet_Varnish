@@ -257,6 +257,7 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
     public function setNoCacheCookie()
     {
         Mage::helper('pagecache')->setNoCacheCookie();
+        Mage::helper('integernet_varnish/enterprise')->setNoCacheCookie();
     }
 
 
@@ -268,9 +269,9 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
     public function unsetNoCacheCookie()
     {
         if ($this->_cookie->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE)) {
-
             $this->_cookie->delete(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
         }
+        Mage::helper('integernet_varnish/enterprise')->unsetNoCacheCookie();
     }
 
 
