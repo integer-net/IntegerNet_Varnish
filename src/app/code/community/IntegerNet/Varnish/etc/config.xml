@@ -44,6 +44,12 @@
                     </index>
                 </entities>
             </integernet_varnish_resource>
+            <enterprise_catalog>
+                <rewrite>
+                    <urlrewrite_matcher_category>IntegerNet_Varnish_Model_Urlrewrite_Matcher_Category</urlrewrite_matcher_category>
+                    <urlrewrite_matcher_product>IntegerNet_Varnish_Model_Urlrewrite_Matcher_Product</urlrewrite_matcher_product>
+                </rewrite>
+            </enterprise_catalog>
         </models>
         <resources>
             <integernet_varnish_setup>
