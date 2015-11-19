@@ -90,6 +90,11 @@ class IntegerNet_Varnish_Model_Config
     protected $_purgeServer;
 
     /**
+     * @var null|int
+     */
+    protected $_purgePort;
+
+    /**
      * @var null|string
      */
     protected $_purgeUrl;
@@ -446,6 +451,18 @@ class IntegerNet_Varnish_Model_Config
         return $this->_purgeServer;
     }
 
+    /**
+     * @return string
+     */
+    public function getPurgePort()
+    {
+        if ($this->_purgePort === null) {
+
+            $this->_purgePort = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_port'));
+        }
+
+        return $this->_purgePort;
+    }
 
     /**
      * @return string

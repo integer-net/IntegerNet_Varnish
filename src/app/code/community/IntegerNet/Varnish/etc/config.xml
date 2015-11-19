@@ -222,6 +222,7 @@
                 <integernet_varnish_dynamic_blocks>a:8:{s:18:"_1381778519126_126";a:3:{s:4:"name";s:9:"top.links";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778543629_629";a:3:{s:4:"name";s:12:"cart_sidebar";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778544485_485";a:3:{s:4:"name";s:28:"right.reports.product.viewed";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778545157_157";a:3:{s:4:"name";s:30:"right.reports.product.compared";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778545771_771";a:3:{s:4:"name";s:23:"catalog.compare.sidebar";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778546551_551";a:3:{s:4:"name";s:15:"global_messages";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778585877_877";a:3:{s:4:"name";s:8:"messages";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778592658_658";a:3:{s:4:"name";s:10:"right.poll";s:4:"type";s:0:"";s:8:"template";s:0:"";}}</integernet_varnish_dynamic_blocks>
                 <integernet_varnish_dynamic_block_js/>
                 <integernet_varnish_purge_server><![CDATA[127.0.0.1]]></integernet_varnish_purge_server>
+                <integernet_varnish_purge_port><![CDATA[80]]></integernet_varnish_purge_port>
                 <integernet_varnish_purge_url><![CDATA[/*]]></integernet_varnish_purge_url>
                 <integernet_varnish_purge_size>100</integernet_varnish_purge_size>
                 <integernet_varnish_build>0</integernet_varnish_build>
