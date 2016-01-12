@@ -39,6 +39,6 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Store implements IntegerNet_V
      */
     public function hasData()
     {
-        return Mage::app()->getDefaultStoreView()->getId() != Mage::app()->getStore()->getId();
+        return Mage::app()->getWebsite()->getDefaultStore()->getId() != Mage::app()->getStore()->getId();
     }
 }
