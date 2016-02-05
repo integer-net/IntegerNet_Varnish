@@ -40,6 +40,7 @@ class IntegerNet_Varnish_Model_Invalidate_Response_Message implements IntegerNet
     public function hasData()
     {
         $sessionModelNames = array(
+            'core/session',
             'customer/session',
             'catalog/session',
             'checkout/session',
