@@ -119,7 +119,14 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
      */
     public function wrapDynamicBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport)
     {
-        if ($this->_config->isEnabled() && $this->_config->isDynamicBlock() && $this->getLifetime()) {
+        /** @var IntegerNet_Varnish_Model_CacheControl $cacheControl */
+        $cacheControl = Mage::getSingleton('integernet_varnish/cacheControl');
+
+        if ($this->_config->isEnabled()
+            && $this->_config->isDynamicBlock()
+            && !$cacheControl->getDisqualifiedStates()
+            && !$cacheControl->getBypassStates()
+        ) {
 
             /** @var $layout Mage_Core_Model_Layout */
             $layout = Mage::app()->getLayout();

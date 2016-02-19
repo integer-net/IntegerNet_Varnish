@@ -36,7 +36,8 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
 
         if ($cacheControl->getConfig()->isEnabled()
             && $cacheControl->getConfig()->isDynamicBlock()
-            && $cacheControl->getLifetime()
+            && !$cacheControl->getDisqualifiedStates()
+            && !$cacheControl->getBypassStates()
         ) {
             return parent::_toHtml();
         }
