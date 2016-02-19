@@ -14,7 +14,7 @@
         <reference name="head">
             <action method="addJs" ifconfig="system/external_page_cache/enabled"><script>integernet_varnish/script.js</script></action>
         </reference>
-        <reference name="head">
+        <reference name="before_body_end">
             <block type="integernet_varnish/js" name="integernet_varnish_js" template="integernet_varnish/js.phtml" />
         </reference>
     </default>

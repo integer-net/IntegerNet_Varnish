@@ -12,7 +12,7 @@
 /**
  * Class IntegerNet_Varnish_Model_Index_Import
  */
-class IntegerNet_Varnish_Model_Index_Import
+class IntegerNet_Varnish_Model_Index_Import implements IntegerNet_Varnish_Model_Index_Import_Interface
 {
 
 
@@ -54,7 +54,7 @@ class IntegerNet_Varnish_Model_Index_Import
 
                 foreach ($requestPaths as $requestPath) {
 
-                    $importCount += $index->indexUrl(Mage::getBaseUrl('web') . $requestPath, 'catalog/category/view', -1);
+                    $importCount += $index->indexUrl(Mage::app()->getStore($storeId)->getBaseUrl('web', false) . $requestPath, 'catalog/category/view', -1);
                 }
             }
         }
@@ -102,7 +102,7 @@ class IntegerNet_Varnish_Model_Index_Import
                 }
 
                 foreach ($catalogUrl->getReadConnection()->fetchCol($select) as $requestPath) {
-                    $importCount += $index->indexUrl(Mage::getBaseUrl('web') . $requestPath, 'catalog/product/view', -1);
+                    $importCount += $index->indexUrl(Mage::app()->getStore($storeId)->getBaseUrl('web', false) . $requestPath, 'catalog/product/view', -1);
                 }
             }
         }

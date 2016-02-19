@@ -44,6 +44,12 @@
                     </index>
                 </entities>
             </integernet_varnish_resource>
+            <enterprise_catalog>
+                <rewrite>
+                    <urlrewrite_matcher_category>IntegerNet_Varnish_Model_Urlrewrite_Matcher_Category</urlrewrite_matcher_category>
+                    <urlrewrite_matcher_product>IntegerNet_Varnish_Model_Urlrewrite_Matcher_Product</urlrewrite_matcher_product>
+                </rewrite>
+            </enterprise_catalog>
         </models>
         <resources>
             <integernet_varnish_setup>
@@ -204,8 +210,8 @@
     <default>
         <system>
             <external_page_cache>
-                <integernet_varnish_headers_add/>
-                <integernet_varnish_headers_remove/>
+                <integernet_varnish_headers_add>a:2:{s:29:"_varnish_header_cache_control";a:2:{s:6:"header";s:13:"Cache-Control";s:5:"value";s:20:"max-age={{lifetime}}";}s:23:"_varnish_header_expires";a:2:{s:6:"header";s:7:"Expires";s:5:"value";s:8:"{{date}}";}}</integernet_varnish_headers_add>
+                <integernet_varnish_headers_remove>a:2:{s:26:"_varnish_header_set_cookie";a:1:{s:6:"header";s:10:"Set-Cookie";}s:22:"_varnish_header_pragma";a:1:{s:6:"header";s:6:"Pragma";}}</integernet_varnish_headers_remove>
                 <integernet_varnish_cache_routes>a:3:{s:18:"_1380016309113_113";a:2:{s:5:"route";s:7:"cms/*/*";s:8:"lifetime";s:5:"86400";}s:18:"_1380795552806_806";a:2:{s:5:"route";s:20:"catalog/product/view";s:8:"lifetime";s:5:"86400";}s:18:"_1380795553675_675";a:2:{s:5:"route";s:21:"catalog/category/view";s:8:"lifetime";s:5:"86400";}}</integernet_varnish_cache_routes>
                 <integernet_varnish_inject_form_key_routes>a:1:{s:18:"_1399473970389_389";a:1:{s:5:"route";s:15:"checkout/cart/*";}}</integernet_varnish_inject_form_key_routes>
                 <integernet_varnish_bypass_states>currency,store</integernet_varnish_bypass_states>
@@ -216,6 +222,7 @@
                 <integernet_varnish_dynamic_blocks>a:8:{s:18:"_1381778519126_126";a:3:{s:4:"name";s:9:"top.links";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778543629_629";a:3:{s:4:"name";s:12:"cart_sidebar";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778544485_485";a:3:{s:4:"name";s:28:"right.reports.product.viewed";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778545157_157";a:3:{s:4:"name";s:30:"right.reports.product.compared";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778545771_771";a:3:{s:4:"name";s:23:"catalog.compare.sidebar";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778546551_551";a:3:{s:4:"name";s:15:"global_messages";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778585877_877";a:3:{s:4:"name";s:8:"messages";s:4:"type";s:0:"";s:8:"template";s:0:"";}s:18:"_1381778592658_658";a:3:{s:4:"name";s:10:"right.poll";s:4:"type";s:0:"";s:8:"template";s:0:"";}}</integernet_varnish_dynamic_blocks>
                 <integernet_varnish_dynamic_block_js/>
                 <integernet_varnish_purge_server><![CDATA[127.0.0.1]]></integernet_varnish_purge_server>
+                <integernet_varnish_purge_port><![CDATA[80]]></integernet_varnish_purge_port>
                 <integernet_varnish_purge_url><![CDATA[/*]]></integernet_varnish_purge_url>
                 <integernet_varnish_purge_size>100</integernet_varnish_purge_size>
                 <integernet_varnish_build>0</integernet_varnish_build>

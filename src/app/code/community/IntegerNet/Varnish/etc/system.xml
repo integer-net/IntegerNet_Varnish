@@ -192,6 +192,17 @@
                                 <control>integernet_varnish</control>
                             </depends>
                         </integernet_varnish_purge_server>
+                        <integernet_varnish_purge_port translate="label comment" module="integernet_varnish">
+                            <label>Purge Port</label>
+                            <sort_order>215</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                            </depends>
+                        </integernet_varnish_purge_port>
                         <integernet_varnish_purge_url translate="label comment" module="integernet_varnish">
                             <label>Purge URL</label>
                             <sort_order>220</sort_order>

@@ -14,5 +14,16 @@
 ?>
 
 <script type="text/javascript">
-    var integerNetVarnish = new IntegerNetVarnish();
+    (function() {
+        <?php if ($this->getNotCached()): ?>
+        var _fetchBlocks = false;
+        <?php else: ?>
+        var _fetchBlocks = Mage.Cookies.get('<?php echo IntegerNet_Varnish_Model_CacheControl::FETCH_DYNAMIC_BLOCKS_COOKIE_NAME ?>');
+        <?php endif; ?>
+
+        var integerNetVarnish = new IntegerNetVarnish(_fetchBlocks);
+        if (!_fetchBlocks) {
+            integerNetVarnish.blocks = <?php echo $this->getDefaultBlocksJson(); ?>;
+        }
+    })();
 </script>

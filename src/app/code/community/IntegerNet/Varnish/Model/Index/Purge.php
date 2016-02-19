@@ -108,6 +108,7 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
         $requestUrl = Zend_Uri::factory($url);
         $headerHost = $requestUrl->getHost();
         $requestUrl->setHost($this->_config->getPurgeServer());
+        $requestUrl->setPort($this->_config->getPurgePort());
 
         /** @var Zend_Http_Client $httpClint */
         $httpClint = new Zend_Http_Client($requestUrl);
