@@ -72,7 +72,7 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
     /**
      *
      */
-    public function  postdispatchDynamicBlockRequest()
+    public function postdispatchDynamicBlockRequest()
     {
         if ($this->_config->isEnabled()
             && $this->_response->canSendHeaders()
@@ -98,8 +98,13 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
                 $block = $layout->getBlock($name);
 
                 if ($block) {
-                    $blockWrapId = $this->getWrapId($name);
-                    $response['blocks'][$blockWrapId] = $block->toHtml();
+
+                    $html = $block->toHtml();
+
+                    if(trim($html)) {
+                        $blockWrapId = $this->getWrapId($name);
+                        $response['blocks'][$blockWrapId] = $html;
+                    }
                 }
             }
 
@@ -146,12 +151,18 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
                     }
                 }
 
-                $info = $this->_config->isDebugMode() ? sprintf('<!-- %s -->', $blockName) : null;
+                /**
+                 * Message block should be have content.
+                 */
+                if(!in_array($blockName, array('global_messages', 'messages')) || trim($html)) {
 
-                $id = $this->getWrapId($block->getNameInLayout());
-                $html = sprintf('<div id="%s">%s%s</div>', $id, $info, $html);
+                    $info = $this->_config->isDebugMode() ? sprintf('<!-- %s -->', $blockName) : null;
 
-                $transport->setData('html', $html);
+                    $id = $this->getWrapId($block->getNameInLayout());
+                    $html = sprintf('<div id="%s">%s%s</div>', $id, $info, $html);
+
+                    $transport->setData('html', $html);
+                }
             }
         }
     }
