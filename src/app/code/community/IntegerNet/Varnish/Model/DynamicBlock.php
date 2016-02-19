@@ -22,13 +22,6 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
      */
     const DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM = 'dynamicblock';
 
-    /**
-     * Contains the default contents for rendered blocks that have been replaced with a placeholder.
-     * Will be used by IntegerNet_Varnish_Block_Js instead of a fetch request if not needed.
-     *
-     * @var array
-     */
-    protected $_defaultBlocks = array();
 
     /**
      *
@@ -146,7 +139,6 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
                     $mockBlock = $layout->createBlock($dynamicBlock['type'], null, array('template' => $dynamicBlock['template']));
 
                     if ($mockBlock instanceof Mage_Core_Block_Abstract) {
-                        $this->_defaultBlocks[$this->getWrapId($block->getNameInLayout())] = $html;
                         $html = $mockBlock->toHtml();
                     }
                 }
@@ -176,14 +168,6 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
     public function getWrapId($blockNameInLayout)
     {
         return sprintf('%s_%s', self::DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM, md5($blockNameInLayout));
-    }
-
-    /**
-     * @return array
-     */
-    public function getDefaultBlocks()
-    {
-        return $this->_defaultBlocks;
     }
 
 }
