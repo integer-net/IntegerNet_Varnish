@@ -3,7 +3,7 @@
  * integer_net GmbH Magento Module
  *
  * @package    IntegerNet_Varnish
- * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @copyright  Copyright (c) 2016 integer_net GmbH (http://www.integer-net.de/)
  * @author     integer_net GmbH <info@integer-net.de>
  * @author     Viktor Franz <vf@integer-net.de>
  */
@@ -53,7 +53,7 @@ $table = $installer->getConnection()
     ->addColumn('priority', Varien_Db_Ddl_Table::TYPE_SMALLINT, null, array(
         'nullable' => false,
         'unsigned' => true,
-        'default' => IntegerNet_Varnish_Model_Index_Priority::PRIORITY_NORMAL,
+        'default' => 0,
     ), 'Priority')
     ->addColumn('count', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
         'nullable' => false,

@@ -3,7 +3,7 @@
  * integer_net GmbH Magento Module
  *
  * @package    IntegerNet_Varnish
- * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @copyright  Copyright (c) 2016 integer_net GmbH (http://www.integer-net.de/)
  * @author     integer_net GmbH <info@integer-net.de>
  * @author     Viktor Franz <vf@integer-net.de>
  */
@@ -28,11 +28,12 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
             if ($this->getValidate()->isNoRoute()) {
 
                 $this->getIndex()->remove();
-                $this->_debugHeader('No Route / Remove URL From Index');
+                $this->_debugHeader('No Route');
+                $this->_debugHeader('Remove URL From Index');
 
             } elseif ($bypassStates = $this->getValidate()->getBypassStates()) {
 
-                $this->_setNoCacheCookie();
+                $this->setNoCacheCookie();
                 $this->_debugHeader('Bypass States', $bypassStates);
                 $this->_debugHeader('Set No Cache Cookie');
 
@@ -43,7 +44,6 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
 
             } elseif ($this->getValidate()->isDynamicBlockRequest()) {
 
-                $this->_unsetNoCacheCookie();
                 $this->_debugHeader('Dynamic Block Request');
 
             } elseif ($this->getRequest()->isNoGet()) {
@@ -120,7 +120,7 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
     /**
      * Disable caching on external storage side by setting special cookie
      */
-    protected function _setNoCacheCookie()
+    public function setNoCacheCookie()
     {
         /** @var Mage_PageCache_Helper_Data $pageCacheHelper */
         $pageCacheHelper = Mage::helper('pagecache');
@@ -143,7 +143,7 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
 
         /** @var IntegerNet_Varnish_Model_Enterprise $enterprise */
         $enterprise = Mage::getModel('integernet_varnish/enterprise');
-        $enterprise->setNoCacheCookie();
+        $enterprise->unsetNoCacheCookie();
     }
 
 

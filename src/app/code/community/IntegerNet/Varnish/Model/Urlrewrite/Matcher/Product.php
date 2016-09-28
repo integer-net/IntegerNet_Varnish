@@ -4,11 +4,18 @@
  *
  * @category   IntegerNet
  * @package    IntegerNet_Varnish
- * @copyright  Copyright (c) 2015 integer_net GmbH (http://www.integer-net.de/)
+ * @copyright  Copyright (c) 2016 integer_net GmbH (http://www.integer-net.de/)
  * @author     Fabian Schmengler <fs@integer-net.de>
+ */
+
+
+/**
+ * Class IntegerNet_Varnish_Model_Urlrewrite_Matcher_Product
  */
 class IntegerNet_Varnish_Model_Urlrewrite_Matcher_Product extends Enterprise_Catalog_Model_Urlrewrite_Matcher_Product
 {
+
+
     /**
      * Redirect to product from another store if custom url key defined
      *
@@ -20,9 +27,12 @@ class IntegerNet_Varnish_Model_Urlrewrite_Matcher_Product extends Enterprise_Cat
     protected function _checkStoreRedirect($productId, $categoryPath)
     {
         parent::_checkStoreRedirect($productId, $categoryPath);
+
         if ($this->_request->isDispatched()) {
-            Mage::getSingleton('integernet_varnish/cacheControl')->setNoCacheCookie();
+
+            /** @var IntegerNet_Varnish_Model_CacheControl $cacheControl */
+            $cacheControl = Mage::getSingleton('integernet_varnish/cacheControl');
+            $cacheControl->setNoCacheCookie();
         }
     }
-
 }
