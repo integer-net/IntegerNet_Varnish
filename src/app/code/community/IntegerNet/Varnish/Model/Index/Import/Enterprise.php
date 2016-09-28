@@ -1,4 +1,5 @@
 <?php
+
 /**
  * integer_net Magento Module
  *
@@ -9,6 +10,14 @@
  */
 class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Varnish_Model_Index_Import_Interface
 {
+
+
+    /**
+     * @param $storeId
+     * @return int
+     * @throws Mage_Core_Exception
+     * @throws Zend_Db_Select_Exception
+     */
     public function importCategoryUrl($storeId)
     {
         $importCount = 0;
@@ -32,13 +41,13 @@ class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Var
             $from = array('main_table' => null) + $select->getPart(Zend_Db_Select::FROM);
             $from['main_table'] = $from['e'];
             unset($from['e']);
-            $from = array_map(function($from) {
+            $from = array_map(function ($from) {
                 $from['joinCondition'] = is_null($from['joinCondition']) ? null : str_replace('`e`', '`main_table`', $from['joinCondition']);
                 return $from;
             }, $from);
             $select->setPart(Zend_Db_Select::FROM, $from);
             $where = $select->getPart(Zend_Db_Select::WHERE);
-            $where = array_map(function($expr) {
+            $where = array_map(function ($expr) {
                 return str_replace('`e`', '`main_table`', $expr);
             }, $where);
             $select->setPart(Zend_Db_Select::WHERE, $where);
@@ -56,6 +65,7 @@ class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Var
 
         return $importCount;
     }
+
 
     /**
      * This imports only product URLs without added category path. It works in EE and CE but since
@@ -93,5 +103,4 @@ class IntegerNet_Varnish_Model_Index_Import_Enterprise implements IntegerNet_Var
             return $importCount;
         }
     }
-
 }

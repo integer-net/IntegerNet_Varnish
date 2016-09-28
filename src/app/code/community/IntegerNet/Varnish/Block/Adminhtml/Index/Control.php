@@ -111,29 +111,4 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Control extends Mage_Adminhtml_Bl
 
         return '';
     }
-
-
-    /**
-     * @return string
-     */
-    public function getRemoveRedirectUrlsButton()
-    {
-        if ($this->_store) {
-
-            /** @var Mage_Adminhtml_Block_Widget_Button $removeRedirectUrlsButton */
-            $removeRedirectUrlsButton = $this->getLayout()->createBlock('adminhtml/widget_button');
-
-            $removeRedirectUrlsButton->setData(array(
-                'label' => Mage::helper('integernet_varnish')->__('Remove Redirect Urls'),
-                'onclick' => sprintf('confirmSetLocation(\'%s\', \'%s\')',
-                    $this->__('Are you sure you want to do this?'),
-                    $this->getUrl('*/*/cleanupredirect', array('store' => $this->_store))),
-                'class' => 'delete'
-            ));
-
-            return $removeRedirectUrlsButton->toHtml();
-        }
-
-        return '';
-    }
 }

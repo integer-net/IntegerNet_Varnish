@@ -27,7 +27,7 @@ class IntegerNet_Varnish_BuildController extends Mage_Core_Controller_Front_Acti
      */
     public function preDispatch()
     {
-        $this->_buildShell = $buildShell = Mage::getModel('integernet_varnish/index_build_shell');
+        $this->_buildShell = Mage::getModel('integernet_varnish/index_build_shell');
 
         if ($this->_buildShell->getSecret() != $this->getRequest()->getParam('secret')) {
 
@@ -42,16 +42,5 @@ class IntegerNet_Varnish_BuildController extends Mage_Core_Controller_Front_Acti
     public function listAction()
     {
         $this->_buildShell->writeShellBuildUrls();
-    }
-
-
-    /**
-     * Remove URL from index, called by shell build script.
-     */
-    public function removeAction()
-    {
-        $url = $this->getRequest()->getParam('url');
-
-        $this->_buildShell->removeByUrl($url);
     }
 }

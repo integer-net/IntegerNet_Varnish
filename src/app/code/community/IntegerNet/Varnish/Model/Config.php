@@ -14,139 +14,8 @@
  *
  * IntegerNet_Varnish configuration
  */
-class IntegerNet_Varnish_Model_Config
+class IntegerNet_Varnish_Model_Config extends Varien_Object
 {
-
-
-    /**
-     * @var null|bool
-     */
-    protected $_isEnable;
-
-    /**
-     * @var null|array
-     */
-    protected $_headerAdd;
-
-    /**
-     * @var null|array
-     */
-    protected $_headerRemove;
-
-    /**
-     * @var null|array
-     */
-    protected $_cacheRoutes;
-
-    /**
-     * @var null|array
-     */
-    protected $_injectFormKeyRouts;
-
-    /**
-     * @var null|array
-     */
-    protected $_bypassStates;
-
-    /**
-     * @var null|array
-     */
-    protected $_disqualifiedStates;
-
-
-    /**
-     * @var null|array
-     */
-    protected $_disqualifiedPaths;
-
-    /**
-     * @var null|array
-     */
-    protected $_allowedParams;
-
-    /**
-     * @var null|bool
-     */
-    protected $_httpsAllowed;
-
-    /**
-     * @var null|bool
-     */
-    protected $_isDynamicBlock;
-
-    /**
-     * @var null|array
-     */
-    protected $_dynamicBlocks;
-
-    /**
-     * @var null|string
-     */
-    protected $_dynamicBlockJs;
-
-    /**
-     * @var null|string
-     */
-    protected $_purgeServer;
-
-    /**
-     * @var null|int
-     */
-    protected $_purgePort;
-
-    /**
-     * @var null|string
-     */
-    protected $_purgeUrl;
-
-    /**
-     * @var null|integer
-     */
-    protected $_purgeSize;
-
-    /**
-     * @var null|bool
-     */
-    protected $_isDebugMode;
-
-    /**
-     * @var null|bool
-     */
-    protected $_isBuild;
-
-    /**
-     * @var null|int
-     */
-    protected $_buildTimeout;
-
-    /**
-     * @var null|integer
-     */
-    protected $_buildShellLimit;
-
-    /**
-     * @var null|integer
-     */
-    protected $_buildPhpLimit;
-    /**
-     * @var null|integer
-     */
-    protected $_buildPhpTimeout;
-
-    /**
-     * @var null|string
-     */
-    protected $_buildUserAgent;
-
-    /**
-     * @var null|IntegerNet_Varnish_Model_Invalidate_Response_Interface[]
-     */
-    protected $_invalidateResponseModels;
-
-    /**
-     * @var null|IntegerNet_Varnish_Model_Invalidate_Resource_Interface[]
-     */
-    protected $_invalidateResourceModels;
 
 
     /**
@@ -154,7 +23,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function isEnabled()
     {
-        if ($this->_isEnable === null) {
+        if (!$this->hasData('enable')) {
 
             /** @var Mage_PageCache_Helper_Data $pageCache */
             $pageCache = Mage::helper('pagecache');
@@ -162,10 +31,12 @@ class IntegerNet_Varnish_Model_Config
             $enabled = $pageCache->isEnabled();
             $cacheControlInstance = $enabled ? $pageCache->getCacheControlInstance() : null;
 
-            $this->_isEnable = $enabled && $cacheControlInstance instanceof IntegerNet_Varnish_Model_Control_Varnish;
+            $enabled = $enabled && $cacheControlInstance instanceof IntegerNet_Varnish_Model_Control_Varnish;
+
+            $this->setData('enable', $enabled);
         }
 
-        return $this->_isEnable;
+        return $this->getData('enable');
     }
 
 
@@ -174,9 +45,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getCacheRoutes()
     {
-        if ($this->_cacheRoutes === null) {
+        if (!$this->hasData('cache_routes')) {
 
-            $this->_cacheRoutes = array();
+            $cacheRoutes = array();
 
             $routesConfig = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_cache_routes');
             $routesConfig = (array)unserialize($routesConfig);
@@ -184,24 +55,29 @@ class IntegerNet_Varnish_Model_Config
             foreach ($routesConfig as $routeConfig) {
 
                 $routeParts = explode('/', $routeConfig['route']);
+                $routeParts = array_map('trim', $routeParts);
                 $lifetime = (int)$routeConfig['lifetime'];
+                $priority = (int)$routeConfig['priority'];
 
-                $route = array_key_exists(0, $routeParts) ? (trim($routeParts[0]) ? trim($routeParts[0]) : '*') : '*';
-                $controller = array_key_exists(1, $routeParts) ? (trim($routeParts[1]) ? trim($routeParts[1]) : '*') : '*';
-                $action = array_key_exists(2, $routeParts) ? (trim($routeParts[2]) ? trim($routeParts[2]) : '*') : '*';
+                $route = (array_key_exists(0, $routeParts) && strlen($routeParts[0])) ? $routeParts[0] : '*';
+                $controller = (array_key_exists(1, $routeParts) && strlen($routeParts[1])) ? $routeParts[1] : '*';
+                $action = (array_key_exists(2, $routeParts) && strlen($routeParts[2])) ? $routeParts[2] : '*';
 
                 if ($route !== '*' && $lifetime > 0) {
-                    $this->_cacheRoutes[] = array(
+                    $cacheRoutes[] = array(
                         'route' => $route,
                         'controller' => $controller,
                         'action' => $action,
                         'lifetime' => $lifetime,
+                        'priority' => $priority,
                     );
                 }
             }
+
+            $this->setData('cache_routes', $cacheRoutes);
         }
 
-        return $this->_cacheRoutes;
+        return $this->getData('cache_routes');
     }
 
 
@@ -210,21 +86,23 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getHeadersAdd()
     {
-        if ($this->_headerAdd === null) {
 
-            $this->_headerAdd = array();
+        if (!$this->hasData('header_add')) {
+
+            $_headerAdd = array();
 
             $headersAdd = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_headers_add');
             $headersAdd = (array)unserialize($headersAdd);
 
             foreach ($headersAdd as $headerAdd) {
                 if ($headerAddTrim = trim($headerAdd['header'])) {
-                    $this->_headerAdd[$headerAddTrim] = trim($headerAdd['value']);
+                    $_headerAdd[$headerAddTrim] = trim($headerAdd['value']);
                 }
             }
+            $this->setData('header_add', $_headerAdd);
         }
 
-        return $this->_headerAdd;
+        return $this->getData('header_add');
     }
 
 
@@ -233,21 +111,23 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getHeadersRemove()
     {
-        if ($this->_headerRemove === null) {
+        if (!$this->hasData('header_remove')) {
 
-            $this->_headerRemove = array();
+            $_headerRemove = array();
 
             $headersRemove = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_headers_remove');
             $headersRemove = (array)unserialize($headersRemove);
 
             foreach ($headersRemove as $headerRemove) {
                 if ($headerRemoveTrim = trim($headerRemove['header'])) {
-                    $this->_headerRemove[] = $headerRemoveTrim;
+                    $_headerRemove[] = $headerRemoveTrim;
                 }
             }
+
+            $this->setData('header_remove', $_headerRemove);
         }
 
-        return $this->_headerRemove;
+        return $this->getData('header_remove');
     }
 
 
@@ -256,9 +136,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getInjectFormKeyRouts()
     {
-        if ($this->_injectFormKeyRouts === null) {
+        if (!$this->hasData('inject_form_key_routs')) {
 
-            $this->_injectFormKeyRouts = array();
+            $_injectFormKeyRouts = array();
 
             $injectFormKeyRoutes = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_inject_form_key_routes');
             $injectFormKeyRoutes = (array)unserialize($injectFormKeyRoutes);
@@ -266,22 +146,25 @@ class IntegerNet_Varnish_Model_Config
             foreach ($injectFormKeyRoutes as $injectFormKeyRoute) {
 
                 $routeParts = explode('/', $injectFormKeyRoute['route']);
+                $routeParts = array_map('trim', $routeParts);
 
-                $route = array_key_exists(0, $routeParts) ? (trim($routeParts[0]) ? trim($routeParts[0]) : '*') : '*';
-                $controller = array_key_exists(1, $routeParts) ? (trim($routeParts[1]) ? trim($routeParts[1]) : '*') : '*';
-                $action = array_key_exists(2, $routeParts) ? (trim($routeParts[2]) ? trim($routeParts[2]) : '*') : '*';
+                $route = (array_key_exists(0, $routeParts) && strlen($routeParts[0])) ? $routeParts[0] : '*';
+                $controller = (array_key_exists(1, $routeParts) && strlen($routeParts[1])) ? $routeParts[1] : '*';
+                $action = (array_key_exists(2, $routeParts) && strlen($routeParts[2])) ? $routeParts[2] : '*';
 
                 if ($route !== '*') {
-                    $this->_injectFormKeyRouts[] = array(
+                    $_injectFormKeyRouts[] = array(
                         'route' => $route,
                         'controller' => $controller,
                         'action' => $action,
                     );
                 }
             }
+
+            $this->setData('inject_form_key_routs', $_injectFormKeyRouts);
         }
 
-        return $this->_injectFormKeyRouts;
+        return $this->getData('inject_form_key_routs');
     }
 
 
@@ -290,13 +173,15 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getBypassStates()
     {
-        if ($this->_bypassStates === null) {
+        if (!$this->hasData('bypass_states')) {
 
-            $this->_bypassStates = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_bypass_states');
-            $this->_bypassStates = explode(',', $this->_bypassStates);
+            $bypassStates = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_bypass_states');
+            $bypassStates = explode(',', $bypassStates);
+
+            $this->setData('bypass_states', $bypassStates);
         }
 
-        return $this->_bypassStates;
+        return $this->getData('bypass_states');
     }
 
 
@@ -305,13 +190,15 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getDisqualifiedStates()
     {
-        if ($this->_disqualifiedStates === null) {
+        if (!$this->hasData('disqualified_states')) {
 
-            $this->_disqualifiedStates = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_disqualified_states');
-            $this->_disqualifiedStates = explode(',', $this->_disqualifiedStates);
+            $disqualifiedStates = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_disqualified_states');
+            $disqualifiedStates = explode(',', $disqualifiedStates);
+
+            $this->setData('disqualified_states', $disqualifiedStates);
         }
 
-        return $this->_disqualifiedStates;
+        return $this->getData('disqualified_states');
     }
 
 
@@ -320,21 +207,23 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getDisqualifiedPaths()
     {
-        if ($this->_disqualifiedPaths === null) {
+        if (!$this->hasData('disqualified_paths')) {
 
-            $this->_disqualifiedPaths = array();
+            $_disqualifiedPaths = array();
 
             $disqualifiedPaths = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_disqualified_paths');
             $disqualifiedPaths = (array)unserialize($disqualifiedPaths);
 
             foreach ($disqualifiedPaths as $disqualifiedParam) {
                 if ($disqualifiedParamTrim = trim($disqualifiedParam['path'])) {
-                    $this->_disqualifiedPaths[] = $disqualifiedParamTrim;
+                    $_disqualifiedPaths[] = $disqualifiedParamTrim;
                 }
             }
+
+            $this->setData('disqualified_paths', $_disqualifiedPaths);
         }
 
-        return $this->_disqualifiedPaths;
+        return $this->getData('disqualified_paths');
     }
 
 
@@ -343,9 +232,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getAllowedParams()
     {
-        if ($this->_allowedParams === null) {
+        if (!$this->hasData('allowed_params')) {
 
-            $this->_allowedParams = array();
+            $_allowedParams = array();
 
             $allowedParams = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_allowed_params');
             $allowedParams = (array)unserialize($allowedParams);
@@ -359,12 +248,18 @@ class IntegerNet_Varnish_Model_Config
                     $values = array_map('trim', $values);
                     $values = array_filter($values);
 
-                    $this->_allowedParams[trim($allowedParam['param'])] = $values;
+                    $priority = (int)array_key_exists('priority', $allowedParam) ? $allowedParam['priority'] : 0;
+
+                    $_allowedParams[trim($allowedParam['param'])] = array(
+                        'values' => $values,
+                        'priority' => $priority,
+                    );
                 }
             }
+            $this->setData('allowed_params', $_allowedParams);
         }
 
-        return $this->_allowedParams;
+        return $this->getData('allowed_params');
     }
 
 
@@ -373,12 +268,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function isHttpsAllowed()
     {
-        if ($this->_httpsAllowed === null) {
-
-            $this->_httpsAllowed = Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_https_allowed');
-        }
-
-        return $this->_httpsAllowed;
+        return Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_https_allowed');
     }
 
 
@@ -387,12 +277,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function isDynamicBlock()
     {
-        if ($this->_isDynamicBlock === null) {
-
-            $this->_isDynamicBlock = Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_dynamic_block');
-        }
-
-        return $this->_isDynamicBlock;
+        return Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_dynamic_block');
     }
 
 
@@ -401,9 +286,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getDynamicBlocks()
     {
-        if ($this->_dynamicBlocks === null) {
+        if (!$this->hasData('dynamic_blocks')) {
 
-            $this->_dynamicBlocks = array();
+            $_dynamicBlocks = array();
 
             $dynamicBlocks = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_dynamic_blocks');
             $dynamicBlocks = (array)unserialize($dynamicBlocks);
@@ -412,15 +297,17 @@ class IntegerNet_Varnish_Model_Config
 
                 if ($holeBlockTrim = trim($dynamicBlock['name'])) {
 
-                    $this->_dynamicBlocks[$holeBlockTrim] = array(
+                    $_dynamicBlocks[$holeBlockTrim] = array(
                         'type' => trim($dynamicBlock['type']),
                         'template' => trim($dynamicBlock['template']),
                     );
                 }
             }
+
+            $this->setData('dynamic_blocks', $_dynamicBlocks);
         }
 
-        return $this->_dynamicBlocks;
+        return $this->getData('dynamic_blocks');
     }
 
 
@@ -429,12 +316,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getDynamicBlockJs()
     {
-        if ($this->_dynamicBlockJs === null) {
-
-            $this->_dynamicBlockJs = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_dynamic_block_js'));
-        }
-
-        return $this->_dynamicBlockJs;
+        return trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_dynamic_block_js'));
     }
 
 
@@ -443,12 +325,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getPurgeServer()
     {
-        if ($this->_purgeServer === null) {
-
-            $this->_purgeServer = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_server'));
-        }
-
-        return $this->_purgeServer;
+        return trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_server'));
     }
 
     /**
@@ -456,12 +333,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getPurgePort()
     {
-        if ($this->_purgePort === null) {
-
-            $this->_purgePort = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_port'));
-        }
-
-        return $this->_purgePort;
+        return trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_port'));
     }
 
     /**
@@ -469,12 +341,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getPurgeUrl()
     {
-        if ($this->_purgeUrl === null) {
-
-            $this->_purgeUrl = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_url'));
-        }
-
-        return $this->_purgeUrl;
+        return trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_url'));
     }
 
 
@@ -483,12 +350,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getPurgeSize()
     {
-        if ($this->_purgeSize === null) {
-
-            $this->_purgeSize = (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_size'));
-        }
-
-        return $this->_purgeSize;
+        return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_purge_size'));
     }
 
 
@@ -497,12 +359,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getBuildType()
     {
-        if ($this->_isBuild === null) {
-
-            $this->_isBuild = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build');
-        }
-
-        return $this->_isBuild;
+        return (integer)Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build');
     }
 
 
@@ -529,51 +386,54 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getBuildTimeout()
     {
-        if ($this->_buildTimeout === null) {
+        return (integer)Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_timeout');
+    }
 
-            $this->_buildTimeout = Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_timeout');
+
+    /**
+     * @return int|null
+     */
+    public function getBuildPriority()
+    {
+        if ($this->isBuildPhp()) {
+
+            return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_php_priority'));
+        } 
+        
+        if ($this->isBuildShell()) {
+
+            return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_shell_priority'));
         }
 
-        return $this->_buildTimeout;
+        return null;
     }
 
 
     /**
      * @return integer
      */
-    public function getBuildShellLimit()
+    public function getBuildLimit()
     {
-        if ($this->_buildShellLimit === null) {
-            $this->_buildShellLimit = (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_shell_limit'));
+        if ($this->isBuildPhp()) {
+
+            return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_php_limit'));
+        } 
+        
+        if ($this->isBuildShell()) {
+
+            return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_shell_limit'));
         }
 
-        return $this->_buildShellLimit;
+        return null;
     }
-
-
-    /**
-     * @return integer
-     */
-    public function getBuildPhpLimit()
-    {
-        if ($this->_buildPhpLimit === null) {
-            $this->_buildPhpLimit = (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_php_limit'));
-        }
-
-        return $this->_buildPhpLimit;
-    }
-
+    
 
     /**
      * @return integer
      */
     public function getBuildPhpTimeout()
     {
-        if ($this->_buildPhpTimeout === null) {
-            $this->_buildPhpTimeout = (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_php_timeout'));
-        }
-
-        return $this->_buildPhpTimeout;
+        return (integer)trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_php_timeout'));
     }
 
 
@@ -582,12 +442,7 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getBuildUserAgent()
     {
-        if ($this->_buildUserAgent === null) {
-
-            $this->_buildUserAgent = trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_user_agent'));
-        }
-
-        return $this->_buildUserAgent;
+        return trim(Mage::getStoreConfig('system/external_page_cache/integernet_varnish_build_user_agent'));
     }
 
 
@@ -596,12 +451,14 @@ class IntegerNet_Varnish_Model_Config
      */
     public function isDebugMode()
     {
-        if ($this->_isDebugMode === null) {
+        if (!$this->hasData('debug_mode')) {
 
-            $this->_isDebugMode = Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_debug_mode');
+            $isDebugMode = Mage::getStoreConfigFlag('system/external_page_cache/integernet_varnish_debug_mode');
+
+            $this->setData('debug_mode', $isDebugMode);
         }
 
-        return $this->_isDebugMode;
+        return $this->getData('debug_mode');
     }
 
 
@@ -610,9 +467,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getInvalidateResponseModels()
     {
-        if ($this->_invalidateResponseModels === null) {
+        if (!$this->hasData('invalidate_response_models')) {
 
-            $this->_invalidateResponseModels = array();
+            $_invalidateResponseModels = array();
 
             $invalidateResponseModelsConfig = Mage::app()->getConfig()->getNode('global/integernet_varnish/invalidate/response');
 
@@ -621,12 +478,14 @@ class IntegerNet_Varnish_Model_Config
                 $model = Mage::getSingleton($class);
 
                 if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Response_Interface) {
-                    $this->_invalidateResponseModels[$key] = $model;
+                    $_invalidateResponseModels[$key] = $model;
                 }
             }
+
+            $this->setData('invalidate_response_models', $_invalidateResponseModels);
         }
 
-        return $this->_invalidateResponseModels;
+        return $this->getData('invalidate_response_models');
     }
 
 
@@ -635,9 +494,9 @@ class IntegerNet_Varnish_Model_Config
      */
     public function getInvalidateResourceModels()
     {
-        if ($this->_invalidateResourceModels === null) {
+        if (!$this->hasData('invalidate_resource_models')) {
 
-            $this->_invalidateResourceModels = array();
+            $_invalidateResourceModels = array();
             $invalidateResourceModelsConfig = Mage::app()->getConfig()->getNode('global/integernet_varnish/invalidate/resource');
 
             foreach ($invalidateResourceModelsConfig->asCanonicalArray() as $key => $class) {
@@ -645,11 +504,13 @@ class IntegerNet_Varnish_Model_Config
                 $model = Mage::getSingleton($class);
 
                 if ($model instanceof IntegerNet_Varnish_Model_Invalidate_Resource_Interface) {
-                    $this->_invalidateResourceModels[$key] = $model;
+                    $_invalidateResourceModels[$key] = $model;
                 }
             }
+
+            $this->setData('invalidate_resource_models', $_invalidateResourceModels);
         }
 
-        return $this->_invalidateResourceModels;
+        return $this->getData('invalidate_resource_models');
     }
 }

@@ -15,104 +15,62 @@
 class IntegerNet_Varnish_Model_Abstract
 {
 
-
-    /**
-     * @var IntegerNet_Varnish_Model_Config
-     */
-    protected $_config;
-
-    /**
-     * @var IntegerNet_Varnish_Model_Resource_Index
-     */
-    protected $_indexResource;
-
-    /**
-     * @var Mage_Core_Controller_Request_Http
-     */
-    protected $_request;
-
-    /**
-     * @var Mage_Core_Controller_Response_Http
-     */
-    protected $_response;
-
-
     /**
      *
      */
-    public function __construct()
-    {
-        $this->_config = Mage::getSingleton('integernet_varnish/config');
-        $this->_indexResource = Mage::getResourceModel('integernet_varnish/index');
-        $this->_request = Mage::app()->getRequest();
-        $this->_response = Mage::app()->getResponse();
-    }
-
+    const DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM = 'dynamicblock';
+    
 
     /**
      * @return IntegerNet_Varnish_Model_Config
      */
     public function getConfig()
     {
-        return $this->_config;
+        return Mage::getSingleton('integernet_varnish/config');
     }
 
 
     /**
-     * get http cache control header lifetime
-     *
-     * @return int
+     * @return IntegerNet_Varnish_Model_Validate
      */
-    public function getLifetime()
+    public function getValidate()
     {
-        if ($this->isNoRoute()) {
-            return 0;
-        }
-
-        $route = $this->_request->getRequestedRouteName();
-        $controller = $this->_request->getRequestedControllerName();
-        $action = $this->_request->getRequestedActionName();
-
-        foreach ($this->_config->getCacheRoutes() as $cacheRoute) {
-
-            if ($cacheRoute['route'] == $route) {
-
-                if ($cacheRoute['controller'] == $controller || $cacheRoute['controller'] == '*') {
-
-                    if ($cacheRoute['action'] == $action || $cacheRoute['action'] == '*') {
-
-                        return $cacheRoute['lifetime'];
-                    }
-                }
-            }
-        }
-
-        return 0;
+        return Mage::getSingleton('integernet_varnish/validate');
     }
 
 
     /**
-     * @return bool
+     * @return IntegerNet_Varnish_Model_Index_Helper
      */
-    public function isNoRoute()
+    public function getIndex()
     {
-        $route = $this->_request->getRequestedRouteName();
-        $controller = $this->_request->getRequestedControllerName();
-        $action = $this->_request->getRequestedActionName();
-
-        if ($route . $controller . $action == 'cmsindexnoRoute') {
-            return true;
-        }
-
-        return false;
+        return Mage::getSingleton('integernet_varnish/index_helper');
     }
 
 
     /**
-     * @return bool
+     * @return Mage_Core_Controller_Request_Http
      */
-    public function isHttpsAllowed()
+    public function getRequest()
     {
-        return $this->_config->isHttpsAllowed();
+        return Mage::app()->getRequest();
+    }
+
+
+    /**
+     * @return Zend_Controller_Response_Http
+     */
+    public function getResponse()
+    {
+        return Mage::app()->getResponse();
+    }
+
+
+    /**
+     * @return Mage_Core_Model_Cookie
+     */
+    public function getCookies()
+    {
+        return Mage::getSingleton('core/cookie');
     }
 }

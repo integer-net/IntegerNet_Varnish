@@ -21,6 +21,8 @@ class IntegerNet_Varnish_Model_Control_Varnish implements Mage_PageCache_Model_C
      */
     public function clean()
     {
-        Mage::getModel('integernet_varnish/index_purge')->purgeAll();
+        /** @var IntegerNet_Varnish_Model_Index_Purge $indexPurge */
+        $indexPurge = Mage::getModel('integernet_varnish/index_purge');
+        $indexPurge->purgeAll();
     }
 }

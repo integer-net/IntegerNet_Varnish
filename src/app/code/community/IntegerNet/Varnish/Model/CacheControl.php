@@ -19,78 +19,66 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
 
 
     /**
-     * @var $cookie Mage_Core_Model_Cookie
+     * @throws Zend_Controller_Response_Exception
      */
-    protected $_cookie;
-
-
-    /**
-     *
-     */
-    public function __construct()
+    public function postdispatch()
     {
-        parent::__construct();
+        if ($this->getConfig()->isEnabled() && $this->getResponse()->canSendHeaders()) {
 
-        $this->_cookie = Mage::getSingleton('core/cookie');
-    }
+            if ($this->getValidate()->isNoRoute()) {
 
+                $this->getIndex()->remove();
+                $this->_debugHeader('No Route / Remove URL From Index');
 
-    /**
-     * @return $this
-     */
-    public function updateResponseHeaders()
-    {
-        if ($this->_config->isEnabled()) {
+            } elseif ($bypassStates = $this->getValidate()->getBypassStates()) {
 
-            if (!$this->_response->canSendHeaders()) {
+                $this->_setNoCacheCookie();
+                $this->_debugHeader('Bypass States', $bypassStates);
+                $this->_debugHeader('Set No Cache Cookie');
 
-                $this->debugHeader('Header Error');
+            } elseif ($this->getValidate()->hasNoCacheCookie()) {
+
+                $this->_unsetNoCacheCookie();
+                $this->_debugHeader('Unset No Cache Cookie');
+
+            } elseif ($this->getValidate()->isDynamicBlockRequest()) {
+
+                $this->_unsetNoCacheCookie();
+                $this->_debugHeader('Dynamic Block Request');
+
+            } elseif ($this->getRequest()->isNoGet()) {
+
+                $this->_debugHeader('No Get Request');
+
+            } elseif (!$this->getValidate()->isHttpsAllowed()) {
+
+                $this->_debugHeader('Https Not Allowed');
+
+            } elseif ($disqualifiedParams = $this->getValidate()->getDisqualifiedParams()) {
+
+                $this->_debugHeader('Disqualified Params', $disqualifiedParams);
+
+            } elseif ($disqualifiedPaths = $this->getValidate()->getDisqualifiedPaths()) {
+
+                $this->_debugHeader('Disqualified Paths', $disqualifiedPaths);
+
+            } elseif ($disqualifiedStates = $this->getValidate()->getDisqualifiedStates()) {
+
+                $this->_debugHeader('Disqualified States', $disqualifiedStates);
+
+            } elseif ($lifetime = $this->getValidate()->getLifetime()) {
+
+                $this->_headersRemove();
+                $this->_headersAdd($lifetime);
+
+                $this->getIndex()->add($lifetime);
+
+                $this->_debugHeader('Lifetime', $lifetime);
 
             } else {
-
-                if ($this->isNoRoute()) {
-
-                    $this->_removeIndex();
-
-                } elseif ($this->_request->isSecure() && !$this->isHttpsAllowed()) {
-
-                    $this->debugHeader('https');
-
-                } elseif ($bypass = $this->getBypassStates()) {
-
-                    $this->debugHeader('bypass', $bypass);
-                    $this->setNoCacheCookie();
-
-                } elseif ($this->hasNoCacheCookie()) {
-
-                    $this->debugHeader('bypass unset');
-                    $this->unsetNoCacheCookie();
-
-                } elseif (!$this->_request->isGet()) {
-
-                    $this->debugHeader('method', $this->_request->getMethod());
-
-                } elseif ($disqualified = $this->getDisqualifiedStates()) {
-
-                    $this->debugHeader('disqualified', $disqualified);
-
-                } elseif ($lifetime = $this->getLifetime()) {
-
-                    $this->debugHeader('lifetime', $lifetime);
-                    $this->_headersRemove();
-                    $this->_headersAdd($lifetime);
-                    $this->_addIndex($lifetime);
-
-                } else {
-
-                    $this->debugHeader('Lifetime', 0);
-                }
-
+                $this->_debugHeader('Lifetime', 0);
             }
-
         }
-
-        return $this;
     }
 
 
@@ -99,7 +87,8 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
      */
     protected function _headersRemove()
     {
-        foreach ($this->_config->getHeadersRemove() as $header) {
+        foreach ($this->getConfig()->getHeadersRemove() as $header) {
+
             header_remove($header);
         }
     }
@@ -120,177 +109,59 @@ class IntegerNet_Varnish_Model_CacheControl extends IntegerNet_Varnish_Model_Abs
             gmdate('D, d M Y H:i:s \G\M\T', time() + $lifetime)
         );
 
-        foreach ($this->_config->getHeadersAdd() as $header => $value) {
+        foreach ($this->getConfig()->getHeadersAdd() as $header => $value) {
 
             $value = str_replace($search, $replace, $value);
-            $this->_response->setHeader($header, $value, true);
+            $this->getResponse()->setHeader($header, $value, true);
         }
-    }
-
-
-    /**
-     * @param $lifetime
-     */
-    protected function _addIndex($lifetime)
-    {
-        $url = Mage::helper('core/url')->getCurrentUrl();
-
-        $route = $this->_request->getRequestedRouteName()
-            . '/' . $this->_request->getRequestedControllerName()
-            . '/' . $this->_request->getRequestedActionName();
-
-        $this->_indexResource->indexUrl($url, $route, $lifetime);
-
-        if (array_key_exists('HTTP_USER_AGENT', $_SERVER) && $_SERVER['HTTP_USER_AGENT'] != $this->_config->getBuildUserAgent()) {
-            $this->_indexResource->countUrl($url);
-        }
-    }
-
-
-    /**
-     *
-     */
-    protected function _removeIndex()
-    {
-        $url = Mage::helper('core/url')->getCurrentUrl();
-        $this->_indexResource->removeByUrl($url);
-    }
-
-
-    /**
-     * @return null|array
-     */
-    public function getBypassStates()
-    {
-        $states = array();
-
-        $invalidateModels = $this->_config->getInvalidateResponseModels();
-        $bypassStates = $this->_config->getBypassStates();
-
-        foreach ($invalidateModels as $invalidate) {
-
-            if (in_array($invalidate->getCode(), $bypassStates) && $invalidate->hasData()) {
-
-                $states[] = $invalidate->getCode();
-            }
-        }
-
-        return count($states) ? $states : null;
-    }
-
-
-    /**
-     * @return null|array
-     */
-    public function getDisqualifiedStates()
-    {
-        $states = array();
-
-        $allowedParams = $this->_config->getAllowedParams();
-
-        foreach ($_GET as $param => $value) {
-
-            if (
-                !array_key_exists($param, $allowedParams)
-                || ($allowedParams[$param] && !in_array($value, $allowedParams[$param]))
-            ) {
-
-                $states[] = $param;
-
-                if (!$this->_config->isDebugMode() && count($states)) {
-                    return $states;
-                }
-            }
-        }
-
-
-        $disqualifiedPaths = $this->_config->getDisqualifiedPaths();
-
-        foreach ($disqualifiedPaths as $disqualifiedPath) {
-
-            if (strpos($this->_request->getOriginalPathInfo(), $disqualifiedPath) !== false) {
-
-                $states[] = $disqualifiedPath;
-
-                if (!$this->_config->isDebugMode() && count($states)) {
-                    return $states;
-                }
-            }
-        }
-
-
-        $invalidateModels = $this->_config->getInvalidateResponseModels();
-        $disqualifiedStates = $this->_config->getDisqualifiedStates();
-
-        foreach ($invalidateModels as $invalidate) {
-
-            if (in_array($invalidate->getCode(), $disqualifiedStates) && $invalidate->hasData()) {
-
-                $states[] = $invalidate->getCode();
-
-                if (!$this->_config->isDebugMode() && count($states)) {
-                    return $states;
-                }
-            }
-        }
-
-        return count($states) ? $states : null;
     }
 
 
     /**
      * Disable caching on external storage side by setting special cookie
-     *
-     * @return boolean
      */
-    public function hasNoCacheCookie()
+    protected function _setNoCacheCookie()
     {
-        return (boolean)$this->_cookie->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
+        /** @var Mage_PageCache_Helper_Data $pageCacheHelper */
+        $pageCacheHelper = Mage::helper('pagecache');
+        $pageCacheHelper->setNoCacheCookie();
+
+        /** @var IntegerNet_Varnish_Model_Enterprise $enterprise */
+        $enterprise = Mage::getModel('integernet_varnish/enterprise');
+        $enterprise->setNoCacheCookie();
     }
 
 
     /**
      * Disable caching on external storage side by setting special cookie
-     *
-     * @return void
      */
-    public function setNoCacheCookie()
+    protected function _unsetNoCacheCookie()
     {
-        Mage::helper('pagecache')->setNoCacheCookie();
-        Mage::helper('integernet_varnish/enterprise')->setNoCacheCookie();
-    }
-
-
-    /**
-     * Disable caching on external storage side by setting special cookie
-     *
-     * @return void
-     */
-    public function unsetNoCacheCookie()
-    {
-        if ($this->_cookie->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE)) {
-            $this->_cookie->delete(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
+        if ($this->getCookies()->get(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE)) {
+            $this->getCookies()->delete(Mage_PageCache_Helper_Data::NO_CACHE_COOKIE);
         }
-        Mage::helper('integernet_varnish/enterprise')->unsetNoCacheCookie();
+
+        /** @var IntegerNet_Varnish_Model_Enterprise $enterprise */
+        $enterprise = Mage::getModel('integernet_varnish/enterprise');
+        $enterprise->setNoCacheCookie();
     }
 
 
     /**
      * @param string $message
      * @param null|string|array $additional
-     *
-     * @return void
      */
-    public function debugHeader($message, $additional = null)
+    protected function _debugHeader($message, $additional = null)
     {
-        if ($this->_config->isEnabled() && $this->_config->isDebugMode() && $this->_response->canSendHeaders()) {
+        if ($this->getConfig()->isDebugMode() && $this->getResponse()->canSendHeaders()) {
 
             if ($additional !== null) {
-                $additional = is_array($additional) ? implode(',', $additional) : (string)$additional;
-                $message = sprintf('%s (%s)', $message, $additional);
+
+                $additional = implode(',', (array)$additional);
+                $message = sprintf('%s: %s', $message, $additional);
             }
 
-            $this->_response->setHeader('X-IntegerNet-Varnish', $message);
+            $this->getResponse()->setHeader('X-IntegerNet-Varnish', $message);
         }
     }
 }

@@ -98,17 +98,16 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Grid extends Mage_Adminhtml_Block
             'renderer' => 'integernet_varnish/adminhtml_index_renderer_url',
         ));
 
-        if (Mage::getSingleton('integernet_varnish/config')->getBuildType()) {
 
-            $this->addColumn('priority', array(
-                'header' => Mage::helper('integernet_varnish')->__('Priority'),
-                'index' => 'priority',
-                'type' => 'options',
-                'options' => Mage::getSingleton('integernet_varnish/index_priority')->getOptions(),
-                'width' => '80px',
-                'align' => 'center',
-            ));
-        }
+        $this->addColumn('priority', array(
+            'header' => Mage::helper('integernet_varnish')->__('Priority'),
+            'index' => 'priority',
+            'type' => 'number',
+            'renderer' => 'integernet_varnish/adminhtml_index_renderer_priority',
+            'width' => '80px',
+            'align' => 'center',
+        ));
+
 
         $this->addColumn('count', array(
             'header' => Mage::helper('integernet_varnish')->__('Count'),
@@ -144,29 +143,31 @@ class IntegerNet_Varnish_Block_Adminhtml_Index_Grid extends Mage_Adminhtml_Block
         $this->getMassactionBlock()->setData('form_field_name', 'index');
         $this->setData('no_filter_massaction_column', true);
 
-        if (Mage::getSingleton('integernet_varnish/config')->getBuildType()) {
-
-            $this->getMassactionBlock()->addItem('priority',
-                array(
-                    'label' => Mage::helper('integernet_varnish')->__('Priority'),
-                    'url' => $this->getUrl('*/*/masspriority'),
-                    'additional' => array(
-                        'visibility' => array(
-                            'name' => 'priority',
-                            'type' => 'select',
-                            'class' => 'required-entry',
-                            'style' => 'width: 120px;',
-                            'label' => Mage::helper('catalog')->__('Priority'),
-                            'values' => Mage::getSingleton('integernet_varnish/index_priority')->getOptions()
-                        )
-                    )
-                ));
-        }
-
         $this->getMassactionBlock()->addItem('purge_flag', array(
             'label' => Mage::helper('integernet_varnish')->__('Purge'),
             'url' => $this->getUrl('*/*/masspurgeflag'),
             'confirm' => Mage::helper('integernet_varnish')->__('Are you sure?')
+        ));
+
+        $this->getMassactionBlock()->addItem('expire', array(
+            'label' => Mage::helper('integernet_varnish')->__('Expire'),
+            'url' => $this->getUrl('*/*/massexpire'),
+            'confirm' => Mage::helper('integernet_varnish')->__('Are you sure?')
+        ));
+
+        $this->getMassactionBlock()->addItem('priority', array(
+            'label' => Mage::helper('integernet_varnish')->__('Priority'),
+            'url' => $this->getUrl('*/*/masspriority'),
+            'additional' => array(
+                'visibility' => array(
+                    'name' => 'priority',
+                    'type' => 'text',
+                    'class' => 'required-entry',
+                    'style' => 'width: 120px;',
+                    'label' => Mage::helper('catalog')->__('Priority'),
+
+                )
+            )
         ));
 
         $this->getMassactionBlock()->addItem('delete', array(

@@ -32,7 +32,7 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @param $url URL
+     * @param string $url
      *
      * @return string hashed URL
      */
@@ -46,24 +46,28 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
      * @param string $url URL
      * @param string $route Route
      * @param int $lifetime Lifetime
+     * @param int $priority Priority
+     * @param boolean $count Conunt
      *
      * @return int The number of affected rows
      */
-    public function indexUrl($url, $route, $lifetime)
+    public function indexUrl($url, $route, $lifetime, $priority = 0, $count = true)
     {
-        $affected = $this->_getWriteAdapter()->update(
-            $this->getMainTable(),
-            array(
-                'updated_at' => date(self::DATE_FORMAT),
-                'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
-                'purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO,
-            ),
-            array('url_key = ?' => $this->_getUrlKey($url))
-        );
+        try {
 
-        if (!$affected) {
+            $affected = $this->_getWriteAdapter()->update(
+                $this->getMainTable(),
+                array(
+                    'updated_at' => date(self::DATE_FORMAT),
+                    'expire_at' => date(self::DATE_FORMAT, time() + (int)$lifetime),
+                    'purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO,
+                    'priority' => (int)$priority,
+                    'count' => $count ? new Zend_Db_Expr('`count`') : new Zend_Db_Expr('`count` + 1'),
+                ),
+                array('url_key = ?' => $this->_getUrlKey($url))
+            );
 
-            try {
+            if (!$affected) {
 
                 $affected = $this->_getWriteAdapter()->insert(
                     $this->getMainTable(),
@@ -74,72 +78,61 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
                         'url_key' => $this->_getUrlKey($url),
                         'route' => $route,
                         'url' => $url,
+                        'priority' => (int)$priority,
+                        'count' => 1,
                     )
                 );
-
-             } catch(Exception $e) {
-
             }
+
+            return $affected;
+
+        } catch (Exception $e) {
+
+            return 0;
         }
+    }
 
-        return $affected;
+    /**
+     * @param int $priority
+     * @return array
+     */
+    public function getUrls($priority)
+    {
+        $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), array('entity_id', 'url'));
+        $select->order(array('priority ASC', 'count DESC', 'expire_at ASC'));
+        $select->where('(priority > 0 AND priority <= ?)', $priority);
+
+        return $this->_getReadAdapter()->fetchPairs($select);
     }
 
 
     /**
-     * @param string $url URL
-     *
-     * @return int The number of affected rows
+     * @param null|int|array $id
+     * @return int
      */
-    public function countUrl($url)
+    public function setExpire($id = array())
     {
-        return $this->_getWriteAdapter()->update(
-            $this->getMainTable(),
-            array('count' => new Zend_Db_Expr('`count` + 1')),
-            array('url_key = ?' => $this->_getUrlKey($url))
-        );
-    }
-
-
-    /**
-     * @return int The number of affected rows
-     */
-    public function setExpireAll()
-    {
-        return $this->_getReadAdapter()->update(
-            $this->getMainTable(),
-            array('expire_at' => date(self::DATE_FORMAT, time() - 1))
-        );
-    }
-
-
-    /**
-     * @param int|array $id Index entity ID
-     *
-     * @return int The number of affected rows
-     */
-    public function setExpireById($id)
-    {
-        $id = is_array($id) ? $id : array($id);
+        $id = (array)$id;
 
         return $this->_getReadAdapter()->update(
             $this->getMainTable(),
             array('expire_at' => date(self::DATE_FORMAT, time() - 1)),
-            array('entity_id IN (?)' => $id)
+            $id ? array('entity_id IN (?)' => $id) : null
         );
     }
 
 
     /**
      * @param int $limit
-     *
-     * @return array ID URL pare list
+     * @param int $priority
+     * @return array
      */
-    public function getExpiredUrls($limit = 100)
+    public function getExpiredUrls($limit, $priority)
     {
         $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), array('entity_id', 'url'));
         $select->order(array('priority ASC', 'count DESC', 'expire_at ASC'));
         $select->where('expire_at <= ?', date(self::DATE_FORMAT));
+        $select->where('(priority > 0 AND priority <= ?)', $priority);
         $select->limit($limit);
 
         return $this->_getReadAdapter()->fetchPairs($select);
@@ -147,53 +140,42 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @param int|array $id Index entity ID
-     *
-     * @return int The number of affected rows
+     * @param null|int|array $id
+     * @return int
      */
-    public function setPurgeFlagById($id)
+    public function setPurge($id = array())
     {
+        $id = (array)$id;
+
         return $this->_getReadAdapter()->update(
             $this->getMainTable(),
             array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_YES),
-            array('entity_id IN (?)' => $id)
+            $id ? array('entity_id IN (?)' => $id) : null
         );
     }
 
 
     /**
-     * @return int The number of affected rows
+     * @param null|int|array $id
+     * @return int
      */
-    public function unsetPurgeFlagAll()
+    public function unsetPurge($id = array())
     {
-        return $this->_getReadAdapter()->update(
-            $this->getMainTable(),
-            array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO)
-        );
-    }
+        $id = (array)$id;
 
-
-    /**
-     * @param int|array $id Index entity ID
-     *
-     * @return int The number of affected rows
-     */
-    public function unsetPurgeFlagById($id)
-    {
         return $this->_getReadAdapter()->update(
             $this->getMainTable(),
             array('purge_flag' => IntegerNet_Varnish_Model_Index_Purge::PURGE_FLAG_NO),
-            array('entity_id IN (?)' => $id)
+            $id ? array('entity_id IN (?)' => $id) : null
         );
     }
 
 
     /**
      * @param int $limit
-     *
-     * @return array ID URL pare list
+     * @return array
      */
-    public function getPurgeFlaggedUrls($limit = 100)
+    public function getPurgeUrls($limit)
     {
         $select = $this->_getReadAdapter()->select()->from($this->getMainTable(), array('entity_id', 'url'));
         $select->order(array('count DESC'));
@@ -205,14 +187,13 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @param int|array $id Index entity ID
+     * @param int|array $id
      * @param int $priority
-     *
-     * @return int The number of affected rows
+     * @return int
      */
     public function setPriority($id, $priority)
     {
-        $id = is_array($id) ? $id : array($id);
+        $id = (array)$id;
 
         return $this->_getReadAdapter()->update(
             $this->getMainTable(),
@@ -223,13 +204,12 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @param int|array $id Index entity ID
-     *
-     * @return int The number of affected rows
+     * @param int|array $id
+     * @return int
      */
-    public function removeById($id)
+    public function remove($id)
     {
-        $id = is_array($id) ? $id : array($id);
+        $id = (array)$id;
 
         return $this->_getWriteAdapter()->delete(
             $this->getMainTable(),
@@ -239,11 +219,10 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @param string $url URL
-     *
-     * @return int The number of affected rows
+     * @param string $url
+     * @return int
      */
-    public function removeByUrl($url)
+    public function removeUrl($url)
     {
         return $this->_getWriteAdapter()->delete(
             $this->getMainTable(),
@@ -253,7 +232,7 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
 
     /**
-     * @return array Routes list
+     * @return array
      */
     public function getRouteOptions()
     {
@@ -263,5 +242,4 @@ class IntegerNet_Varnish_Model_Resource_Index extends Mage_Core_Model_Resource_D
 
         return $this->_getReadAdapter()->fetchCol($select);
     }
-
 }

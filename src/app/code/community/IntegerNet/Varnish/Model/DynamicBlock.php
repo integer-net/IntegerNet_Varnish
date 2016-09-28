@@ -18,98 +18,59 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
 
 
     /**
-     *
-     */
-    const DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM = 'dynamicblock';
-
-
-    /**
-     *
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-
-    /**
      * @return bool
      */
     public function predispatchDynamicBlockRequest()
     {
-        if ($this->_config->isEnabled() && $this->isDynamicBlockRequest()) {
+        if ($this->getConfig()->isEnabled() && $this->getValidate()->isDynamicBlockRequest()) {
 
-            $this->setNoRender();
+            Mage::app()->setUseSessionInUrl(false); // prevent add ___SID argument to urls
+            Mage::app()->getFrontController()->setData('no_render', true);
         }
     }
 
 
     /**
-     * @return bool
-     */
-    public function isDynamicBlockRequest()
-    {
-        return $this->_request->isAjax() && $this->_request->getParam(self::DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM);
-    }
-
-
-    /**
-     *
-     */
-    public function setNoRender()
-    {
-        Mage::app()->getFrontController()->setData('no_render', true);
-    }
-
-
-    /**
-     *
+     * @throws Zend_Controller_Response_Exception
      */
     public function postdispatchDynamicBlockRequest()
     {
-        if ($this->_config->isEnabled()
-            && $this->_response->canSendHeaders()
-            && $this->isDynamicBlockRequest()
+        if ($this->getConfig()->isEnabled()
+            && $this->getResponse()->canSendHeaders()
+            && $this->getValidate()->isDynamicBlockRequest()
         ) {
-
-            /**
-             * privent add ___SID argument to urls
-             */
-            Mage::app()->setUseSessionInUrl(false);
 
             /** @var $layout Mage_Core_Model_Layout */
             $layout = Mage::app()->getLayout();
 
             $response = array(
                 'blocks' => array(),
-                'script' => $this->_config->getDynamicBlockJs(),
+                'script' => $this->getConfig()->getDynamicBlockJs(),
             );
 
-            foreach ($this->_config->getDynamicBlocks() as $name => $info) {
+            foreach ($this->getConfig()->getDynamicBlocks() as $name => $info) {
 
                 /** @var $block Mage_Core_Block_Abstract */
                 $block = $layout->getBlock($name);
 
                 if ($block) {
 
-                    $html = $block->toHtml();
+                    $html = trim($block->toHtml());
 
-                    if(trim($html)) {
-                        $blockWrapId = $this->getWrapId($name);
+                    if ($html) {
+                        $blockWrapId = $this->_getWrapId($name);
                         $response['blocks'][$blockWrapId] = $html;
                     }
                 }
             }
 
-            $response = Mage::helper('core')->jsonEncode($response);
+            /** @var Mage_Core_Helper_Data $coreHelper */
+            $coreHelper = Mage::helper('core');
+            $response = $coreHelper->jsonEncode($response);
 
-            $this->_response->setHeader('Content-Type', 'application/json');
-            $this->_response->setBody($response);
-
-            return true;
+            $this->getResponse()->setHeader('Content-Type', 'application/json');
+            $this->getResponse()->setBody($response);
         }
-
-        return false;
     }
 
 
@@ -119,20 +80,13 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
      */
     public function wrapDynamicBlock(Mage_Core_Block_Abstract $block, Varien_Object $transport)
     {
-        /** @var IntegerNet_Varnish_Model_CacheControl $cacheControl */
-        $cacheControl = Mage::getSingleton('integernet_varnish/cacheControl');
-
-        if ($this->_config->isEnabled()
-            && $this->_config->isDynamicBlock()
-            && !$cacheControl->getDisqualifiedStates()
-            && !$cacheControl->getBypassStates()
-        ) {
-
+        if ($this->getConfig()->isEnabled() && $this->getConfig()->isDynamicBlock()) 
+        {
             /** @var $layout Mage_Core_Model_Layout */
             $layout = Mage::app()->getLayout();
 
             $blockName = $block->getNameInLayout();
-            $dynamicBlocks = $this->_config->getDynamicBlocks();
+            $dynamicBlocks = $this->getConfig()->getDynamicBlocks();
 
             if (array_key_exists($blockName, $dynamicBlocks)) {
 
@@ -140,7 +94,11 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
 
                 $html = $transport->getData('html');
 
-                if (!$this->isDynamicBlockRequest() && $dynamicBlock['type']) {
+
+                /**
+                 * If regular request, replace block by placeholder
+                 */
+                if ($dynamicBlock['type'] && !$this->getValidate()->isDynamicBlockRequest()) {
 
                     /** @var Mage_Core_Block_Abstract $mockBlock */
                     $mockBlock = $layout->createBlock($dynamicBlock['type'], null, array('template' => $dynamicBlock['template']));
@@ -153,11 +111,11 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
                 /**
                  * Message block should be have content.
                  */
-                if(!in_array($blockName, array('global_messages', 'messages')) || trim($html)) {
+                if (!in_array($blockName, array('global_messages', 'messages')) || trim($html)) {
 
-                    $info = $this->_config->isDebugMode() ? sprintf('<!-- %s -->', $blockName) : null;
+                    $info = $this->getConfig()->isDebugMode() ? sprintf('<!-- IntegerNet_Varnish Dynamic Block: %s -->', $blockName) : null;
 
-                    $id = $this->getWrapId($block->getNameInLayout());
+                    $id = $this->_getWrapId($block->getNameInLayout());
                     $html = sprintf('<div id="%s">%s%s</div>', $id, $info, $html);
 
                     $transport->setData('html', $html);
@@ -172,9 +130,8 @@ class IntegerNet_Varnish_Model_DynamicBlock extends IntegerNet_Varnish_Model_Abs
      *
      * @return string
      */
-    public function getWrapId($blockNameInLayout)
+    protected function _getWrapId($blockNameInLayout)
     {
         return sprintf('%s_%s', self::DYNAMIC_BLOCK_REQUEST_IDENTIFICATION_PARAM, md5($blockNameInLayout));
     }
-
 }

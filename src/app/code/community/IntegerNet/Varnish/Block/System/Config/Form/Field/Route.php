@@ -23,11 +23,17 @@ class IntegerNet_Varnish_Block_System_Config_Form_Field_Route extends Mage_Admin
     {
         $this->addColumn('route', array(
             'label' => Mage::helper('integernet_varnish')->__('Route'),
-            'style' => 'width:415px',
+            'style' => 'width:515px',
         ));
+
         $this->addColumn('lifetime', array(
             'label' => Mage::helper('integernet_varnish')->__('Lifetime (s)'),
-            'style' => 'width:200px',
+            'style' => 'width:80px',
+        ));
+
+        $this->addColumn('priority', array(
+            'label' => Mage::helper('integernet_varnish')->__('Priority'),
+            'style' => 'width:80px',
         ));
 
         $this->_addAfter = false;

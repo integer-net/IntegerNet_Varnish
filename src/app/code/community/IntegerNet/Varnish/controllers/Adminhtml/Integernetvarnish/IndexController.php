@@ -32,15 +32,14 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
     /**
      *
      */
-    public function masspriorityAction()
+    public function masspurgeflagAction()
     {
         try {
-            $indexIds = $this->getRequest()->getParam('index');
-            $priority = $this->getRequest()->getParam('priority');
+            $ids = $this->getRequest()->getParam('index');
 
-            $affected = Mage::getSingleton('integernet_varnish/index_priority')->update($indexIds, $priority);
+            Mage::getResourceModel('integernet_varnish/index')->setPurge($ids);
 
-            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been deleted.'));
+            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been set to purge.'));
         } catch (Exception $e) {
             $this->_getSession()->addError($e->getMessage());
         }
@@ -52,14 +51,34 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
     /**
      *
      */
-    public function masspurgeflagAction()
+    public function massexpireAction()
     {
         try {
             $ids = $this->getRequest()->getParam('index');
 
-            $affected = Mage::getResourceModel('integernet_varnish/index')->setPurgeFlagById($ids);
+            Mage::getResourceModel('integernet_varnish/index')->setExpire($ids);
 
-            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been set to purge.'));
+            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been set to expire.'));
+        } catch (Exception $e) {
+            $this->_getSession()->addError($e->getMessage());
+        }
+
+        $this->_redirect('*/*/index');
+    }
+
+
+    /**
+     *
+     */
+    public function masspriorityAction()
+    {
+        try {
+            $ids = $this->getRequest()->getParam('index');
+            $priority = $this->getRequest()->getParam('priority');
+
+            Mage::getResourceModel('integernet_varnish/index')->setPriority($ids, $priority);
+
+            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been deleted.'));
         } catch (Exception $e) {
             $this->_getSession()->addError($e->getMessage());
         }
@@ -76,9 +95,9 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
         try {
             $ids = $this->getRequest()->getParam('index');
 
-            $affected = Mage::getResourceModel('integernet_varnish/index')->removeById($ids);
+            Mage::getResourceModel('integernet_varnish/index')->remove($ids);
 
-            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('%s index entries have been deleted.', $affected));
+            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Index entries have been deleted.'));
 
         } catch (Exception $e) {
             $this->_getSession()->addError($e->getMessage());
@@ -119,26 +138,6 @@ class IntegerNet_Varnish_Adminhtml_Integernetvarnish_IndexController extends Mag
             $affected = Mage::helper('integernet_varnish')->getIndexImportSingleton()->importProductUrl($storeId);
 
             $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('%s Product URls has been imported.', $affected));
-
-        } catch (Exception $e) {
-            $this->_getSession()->addError($e->getMessage());
-        }
-
-        $this->_redirect('*/*/index');
-    }
-
-
-    /**
-     *
-     */
-    public function cleanupredirectAction()
-    {
-        try {
-            $storeId = $this->getRequest()->getParam('store');
-
-            $affected = Mage::getSingleton('integernet_varnish/index_cleanup')->deleteRedirectUrls($storeId);
-
-            $this->_getSession()->addSuccess(Mage::helper('integernet_varnish')->__('Selected index entries have been deleted.'));
 
         } catch (Exception $e) {
             $this->_getSession()->addError($e->getMessage());

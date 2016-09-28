@@ -22,6 +22,19 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
     const PURGE_FLAG_NO = 0;
     const PURGE_FLAG_YES = 1;
 
+    /**
+     * @var IntegerNet_Varnish_Model_Resource_Index
+     */
+    protected $_indexResource;
+
+    /**
+     * IntegerNet_Varnish_Model_Index_Purge constructor.
+     */
+    public function __construct()
+    {
+        $this->_indexResource = Mage::getResourceModel('integernet_varnish/index');
+    }
+
 
     /**
      * call by crontab to purge URL asynchronous
@@ -32,8 +45,9 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
     {
         $message = array();
         $purgedUrlIds = array();
+        $limit = $this->getConfig()->getPurgeSize();
 
-        foreach ($this->_indexResource->getPurgeFlaggedUrls($this->_config->getPurgeSize()) as $indexEntityId => $url) {
+        foreach ($this->_indexResource->getPurgeUrls($limit) as $indexEntityId => $url) {
 
             $httpResponse = $this->purgeUrl($url);
 
@@ -47,8 +61,8 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
         }
 
         if ($purgedUrlIds) {
-            $this->_indexResource->setExpireById($purgedUrlIds);
-            $this->_indexResource->unsetPurgeFlagById($purgedUrlIds);
+            $this->_indexResource->setExpire($purgedUrlIds);
+            $this->_indexResource->unsetPurge($purgedUrlIds);
         }
 
         if ($schedule && count($message)) {
@@ -71,7 +85,7 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
             /** @var Zend_Uri_Http $url */
             $url = $store->getBaseUrl();
             $url = Zend_Uri::factory($url);
-            $url->setPath($this->_config->getPurgeUrl());
+            $url->setPath($this->getConfig()->getPurgeUrl());
 
             if (!in_array($url->getHost(), $purged)) {
 
@@ -83,8 +97,8 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
 
                 if ($httpResponse->isSuccessful()) {
 
-                    $this->_indexResource->setExpireAll();
-                    $this->_indexResource->unsetPurgeFlagAll();
+                    $this->_indexResource->setExpire();
+                    $this->_indexResource->unsetPurge();
 
                     Mage::getSingleton('adminhtml/session')->addSuccess($message);
                 } else {
@@ -107,8 +121,8 @@ class IntegerNet_Varnish_Model_Index_Purge extends IntegerNet_Varnish_Model_Abst
         /** @var Zend_Uri_Http $requestUrl */
         $requestUrl = Zend_Uri::factory($url);
         $headerHost = $requestUrl->getHost();
-        $requestUrl->setHost($this->_config->getPurgeServer());
-        $requestUrl->setPort($this->_config->getPurgePort());
+        $requestUrl->setHost($this->getConfig()->getPurgeServer());
+        $requestUrl->setPort($this->getConfig()->getPurgePort());
 
         /** @var Zend_Http_Client $httpClint */
         $httpClint = new Zend_Http_Client($requestUrl);

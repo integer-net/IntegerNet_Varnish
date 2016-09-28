@@ -60,6 +60,14 @@
             </integernet_varnish_setup>
         </resources>
         <events>
+            <send_redirect_headers>
+                <observers>
+                    <integernet_varnish>
+                        <class>integernet_varnish/observer</class>
+                        <method>sendRedirectHeaders</method>
+                    </integernet_varnish>
+                </observers>
+            </send_redirect_headers>
             <model_save_after>
                 <observers>
                     <integernet_varnish>
@@ -110,6 +118,9 @@
                 </integernet_varnish>
             </controls>
         </external_cache>
+        <request_rewrite>
+            <model>integernet_varnish/url_rewrite_request</model>
+        </request_rewrite>
     </global>
     <crontab>
         <jobs>

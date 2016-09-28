@@ -25,7 +25,10 @@ class IntegerNet_Varnish_Model_Index_Build_Php extends IntegerNet_Varnish_Model_
 
         $logFilePathName = $this->_getVarDir() . $this->_outputFileName . '.log';
 
-        $urls = $this->_indexResource->getExpiredUrls($this->_config->getBuildPhpLimit());
+        $limit = $this->getConfig()->getBuildLimit();
+        $priority = $this->getConfig()->getBuildPriority();
+
+        $urls = $this->_indexResource()->getExpiredUrls($limit, $priority);
 
         foreach ($urls as $id => $url) {
 
@@ -34,8 +37,8 @@ class IntegerNet_Varnish_Model_Index_Build_Php extends IntegerNet_Varnish_Model_
 
             try {
                 $httpClient = new Zend_Http_Client($url, array(
-                    'useragent' => $this->_config->getBuildUserAgent(),
-                    'timeout' => $this->_config->getBuildTimeout(),
+                    'useragent' => $this->getConfig()->getBuildUserAgent(),
+                    'timeout' => $this->getConfig()->getBuildTimeout(),
                 ));
 
                 /** @var Zend_Http_Response $httpResponse */
@@ -48,7 +51,7 @@ class IntegerNet_Varnish_Model_Index_Build_Php extends IntegerNet_Varnish_Model_
 
                 if ($httpResponse->getStatus() == 301) {
 
-                    $this->_indexResource->removeById($id);
+                    $this->_indexResource()->remove($id);
                 }
 
             } catch (Exception $e) {
@@ -60,7 +63,7 @@ class IntegerNet_Varnish_Model_Index_Build_Php extends IntegerNet_Varnish_Model_
 
             $timeout += microtime(true) - $timeoutStart;
 
-            if ($timeout >= $this->_config->getBuildPhpTimeout()) {
+            if ($timeout >= $this->getConfig()->getBuildPhpTimeout()) {
                 break;
             }
         }

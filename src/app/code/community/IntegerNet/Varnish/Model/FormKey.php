@@ -25,34 +25,21 @@ class IntegerNet_Varnish_Model_FormKey extends IntegerNet_Varnish_Model_Abstract
      */
     const FORM_KEY_PARAM_NAME = 'form_key';
 
-    /**
-     * @var string
-     */
-    protected $_formKey;
-
-
-    /**
-     *
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->_formKey = Mage::getSingleton('core/session')->getFormKey();
-    }
-
 
     /**
      * @return void
      */
     public function updateFormKey()
     {
-        if ($this->_config->isEnabled()
-            && $this->_request->getParam(self::FORM_KEY_PARAM_NAME)
-            && $this->isInjectFormKeyRoute()
+        if ($this->getConfig()->isEnabled()
+            && $this->getRequest()->getParam(self::FORM_KEY_PARAM_NAME)
+            && $this->_isInjectFormKeyRoute()
         ) {
 
-            $this->_request->setParam(self::FORM_KEY_PARAM_NAME, $this->_formKey);
+            /** @var Mage_Core_Model_Session $session */
+            $session = Mage::getSingleton('core/session');
+
+            $this->getRequest()->setParam(self::FORM_KEY_PARAM_NAME, $session->getFormKey());
         }
     }
 
@@ -60,13 +47,13 @@ class IntegerNet_Varnish_Model_FormKey extends IntegerNet_Varnish_Model_Abstract
     /**
      * @return boolean
      */
-    public function isInjectFormKeyRoute()
+    protected function _isInjectFormKeyRoute()
     {
-        $route = $this->_request->getRequestedRouteName();
-        $controller = $this->_request->getRequestedControllerName();
-        $action = $this->_request->getRequestedActionName();
+        $route = $this->getRequest()->getRequestedRouteName();
+        $controller = $this->getRequest()->getRequestedControllerName();
+        $action = $this->getRequest()->getRequestedActionName();
 
-        foreach ($this->_config->getInjectFormKeyRouts() as $injectFormKeyRoute) {
+        foreach ($this->getConfig()->getInjectFormKeyRouts() as $injectFormKeyRoute) {
 
             if ($injectFormKeyRoute['route'] == $route) {
 

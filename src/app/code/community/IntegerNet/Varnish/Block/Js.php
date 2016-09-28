@@ -15,14 +15,12 @@
 class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
 {
 
-    /**
-     * @return string
-     */
-    public function getTemplate()
-    {
-        return parent::getTemplate() ? parent::getTemplate() : 'integernet_varnish/js.phtml';
-    }
 
+    /**
+     * @var string
+     */
+    protected $_template = 'integernet_varnish/js.phtml';
+    
 
     /**
      * Render block HTML
@@ -31,13 +29,15 @@ class IntegerNet_Varnish_Block_Js extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        /** @var IntegerNet_Varnish_Model_CacheControl $cacheControl */
-        $cacheControl = Mage::getSingleton('integernet_varnish/cacheControl');
-
-        if ($cacheControl->getConfig()->isEnabled()
-            && $cacheControl->getConfig()->isDynamicBlock()
-            && !$cacheControl->getDisqualifiedStates()
-            && !$cacheControl->getBypassStates()
+        /** @var IntegerNet_Varnish_Model_Validate $validate */
+        $validate = Mage::getSingleton('integernet_varnish/validate');
+        
+        if ($validate->getConfig()->isEnabled()
+            && $validate->getConfig()->isDynamicBlock()
+            && !$validate->getDisqualifiedPaths()
+            && !$validate->getDisqualifiedParams()
+            && !$validate->getDisqualifiedStates()
+            && !$validate->getBypassStates()
         ) {
             return parent::_toHtml();
         }

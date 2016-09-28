@@ -17,12 +17,9 @@ class IntegerNet_Varnish_Block_Cookie extends Mage_Core_Block_Template
 
 
     /**
-     * @return string
+     * @var string
      */
-    public function getTemplate()
-    {
-        return parent::getTemplate() ? parent::getTemplate() : 'pagecache/cookie.phtml';
-    }
+    protected $_template = 'pagecache/cookie.phtml';
 
 
     /**
@@ -32,7 +29,10 @@ class IntegerNet_Varnish_Block_Cookie extends Mage_Core_Block_Template
      */
     protected function _toHtml()
     {
-        if (Mage::getSingleton('integernet_varnish/config')->isEnabled()) {
+        /** @var IntegerNet_Varnish_Model_Config $config */
+        $config = Mage::getSingleton('integernet_varnish/config');
+
+        if ($config->isEnabled()) {
             return null;
         }
 

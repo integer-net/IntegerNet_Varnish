@@ -22,10 +22,16 @@ class IntegerNet_Varnish_Model_Index_Build_Shell extends IntegerNet_Varnish_Mode
      */
     public function build()
     {
-        $listUrl = Mage::getUrl('integernetvarnish/build/list', array('secret' => $this->getSecret()));
-        $removeUrl = Mage::getUrl('integernetvarnish/build/remove', array('secret' => $this->getSecret()));
+        
+        Mage::register('custom_entry_point', true, true); // and "index.php" to URL!
+        
+        $urlParams = array(
+            'secret' => $this->getSecret(),
+        );
 
-        $script = $this->_script($listUrl, $removeUrl, $this->_config->getBuildTimeout(), $this->_config->getBuildUserAgent());
+        $listUrl = Mage::getUrl('integernetvarnish/build/list', $urlParams);
+
+        $script = $this->_script($listUrl, $this->getConfig()->getBuildTimeout(), $this->getConfig()->getBuildUserAgent());
 
         file_put_contents($this->_getVarDir() . 'build.sh', $script);
     }
@@ -47,7 +53,29 @@ class IntegerNet_Varnish_Model_Index_Build_Shell extends IntegerNet_Varnish_Mode
      */
     public function writeShellBuildUrls()
     {
-        $urls = $this->_indexResource->getExpiredUrls($this->_config->getBuildShellLimit());
+        $limit = $this->getConfig()->getBuildLimit();
+        $priority = $this->getConfig()->getBuildPriority();
+
+        $urls = $this->_indexResource()->getExpiredUrls($limit, $priority);
+
+        if ($urls) {
+
+            $fileName = $this->_outputFileName . '.url';
+            $urls = implode(PHP_EOL, $urls) . PHP_EOL;
+
+            file_put_contents($this->_getVarDir() . $fileName, $urls);
+        }
+    }
+
+    
+    /**
+     *
+     */
+    public function writeAllShellBuildUrls()
+    {
+        $priority = $this->getConfig()->getBuildPriority();
+
+        $urls = $this->_indexResource()->getUrls($priority);
 
         if ($urls) {
 
@@ -60,38 +88,22 @@ class IntegerNet_Varnish_Model_Index_Build_Shell extends IntegerNet_Varnish_Mode
 
 
     /**
-     *
-     */
-    public function deleteJobFiles()
-    {
-        foreach (glob($this->_getVarDir() . 'build_*.job') as $file) {
-            unlink($file);
-        };
-
-        foreach (glob($this->_getVarDir() . 'build_*.url') as $file) {
-            unlink($file);
-        };
-    }
-
-
-    /**
      * @param $url
      */
-    public function removeByUrl($url)
+    public function removeUrl($url)
     {
-        $this->_indexResource->removeByUrl($url);
+        $this->_indexResource()->removeUrl($url);
     }
 
 
     /**
      * @param string $listUrl
-     * @param string $removeUrl
      * @param int $timeout
      * @param string $userAgent
      *
      * @return string Shell script
      */
-    protected function _script($listUrl, $removeUrl, $timeout, $userAgent)
+    protected function _script($listUrl, $timeout, $userAgent)
     {
 
         return <<<BUILD_SHELL_SCRIPT
@@ -175,15 +187,6 @@ while read URL
         STATUS=$(curl --silent --max-time {$timeout} --user-agent "{$userAgent}" --output /dev/null --write-out "$(date +\%Y-\%m-\%d\ \%H:\%M:\%S) - %{http_code} - %{time_total}s - %{url_effective}\\n" --url "\${URL}")
 
         echo "\${STATUS}" >> "\${LOGFILE}"
-
-        ##
-        ## remove 301 status urlsfrom index
-        ##
-
-        if [[ \${STATUS} == *"- 301 -"* ]]
-        then
-          curl --silent --output /dev/null --data "url=\${URL}" --url "{$removeUrl}"
-        fi
     fi
 done < "\${JOBFILE}"
 

@@ -23,11 +23,17 @@ class IntegerNet_Varnish_Block_System_Config_Form_Field_Param extends Mage_Admin
     {
         $this->addColumn('param', array(
             'label' => Mage::helper('integernet_varnish')->__('Param'),
-            'style' => 'width:200px',
+            'style' => 'width:150px',
         ));
+        
         $this->addColumn('value', array(
             'label' => Mage::helper('integernet_varnish')->__('Values, separate by |'),
             'style' => 'width:415px',
+        ));
+
+        $this->addColumn('priority', array(
+            'label' => Mage::helper('integernet_varnish')->__('Priority'),
+            'style' => 'width:80px',
         ));
 
         $this->_addAfter = false;

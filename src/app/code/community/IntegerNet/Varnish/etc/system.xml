@@ -227,9 +227,33 @@
                                 <control>integernet_varnish</control>
                             </depends>
                         </integernet_varnish_build>
+                        <integernet_varnish_build_shell_priority translate="label comment" module="integernet_varnish">
+                            <label>Max Priority</label>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_build>1</integernet_varnish_build>
+                            </depends>
+                        </integernet_varnish_build_shell_priority>
+                        <integernet_varnish_build_php_priority translate="label comment" module="integernet_varnish">
+                            <label>Max Priority</label>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <enabled>1</enabled>
+                                <control>integernet_varnish</control>
+                                <integernet_varnish_build>2</integernet_varnish_build>
+                            </depends>
+                        </integernet_varnish_build_php_priority>
                         <integernet_varnish_build_shell_limit translate="label comment" module="integernet_varnish">
                             <label>Build Limit</label>
-                            <sort_order>240</sort_order>
+                            <sort_order>250</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -241,7 +265,7 @@
                         </integernet_varnish_build_shell_limit>
                         <integernet_varnish_build_php_limit translate="label comment" module="integernet_varnish">
                             <label>Build Limit</label>
-                            <sort_order>240</sort_order>
+                            <sort_order>250</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -253,7 +277,7 @@
                         </integernet_varnish_build_php_limit>
                         <integernet_varnish_build_php_timeout translate="label comment" module="integernet_varnish">
                             <label>Build Timeout (s)</label>
-                            <sort_order>250</sort_order>
+                            <sort_order>260</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -267,7 +291,7 @@
                             <label>Debug Mode</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>260</sort_order>
+                            <sort_order>270</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>

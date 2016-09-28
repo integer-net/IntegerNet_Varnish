@@ -19,11 +19,6 @@ class IntegerNet_Varnish_Model_Index_Build extends IntegerNet_Varnish_Model_Abst
     /**
      * @var string
      */
-    protected $_varDir;
-
-    /**
-     * @var string
-     */
     protected $_outputFileName;
 
 
@@ -32,8 +27,6 @@ class IntegerNet_Varnish_Model_Index_Build extends IntegerNet_Varnish_Model_Abst
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->_outputFileName = sprintf('build_%s', date('YmdHis'));
     }
 
@@ -43,13 +36,17 @@ class IntegerNet_Varnish_Model_Index_Build extends IntegerNet_Varnish_Model_Abst
      */
     public function build()
     {
-        if ($this->_config->isBuildPhp()) {
+        if ($this->getConfig()->isBuildPhp()) {
 
-            Mage::getModel('integernet_varnish/index_build_php')->build();
+            /** @var IntegerNet_Varnish_Model_Index_Build_Php $build */
+            $build = Mage::getModel('integernet_varnish/index_build_php');
+            $build->build();
 
-        } elseif ($this->_config->isBuildShell()) {
+        } elseif ($this->getConfig()->isBuildShell()) {
 
-            Mage::getModel('integernet_varnish/index_build_shell')->build();
+            /** @var IntegerNet_Varnish_Model_Index_Build_Shell $build */
+            $build = Mage::getModel('integernet_varnish/index_build_shell');
+            $build->build();
         }
     }
 
@@ -59,11 +56,18 @@ class IntegerNet_Varnish_Model_Index_Build extends IntegerNet_Varnish_Model_Abst
      */
     protected function _getVarDir()
     {
-        if ($this->_varDir === null) {
-            $this->_varDir = Mage::getBaseDir('var') . DS . 'integernet_varnish' . DS;
-            Mage::getConfig()->getOptions()->createDirIfNotExists($this->_varDir);
-        }
+        $varDir = Mage::getBaseDir('var') . DS . 'integernet_varnish' . DS;
+        Mage::getConfig()->getOptions()->createDirIfNotExists($varDir);
+        
+        return $varDir;
+    }
 
-        return $this->_varDir;
+
+    /**
+     * @return IntegerNet_Varnish_Model_Resource_Index
+     */
+    protected function _indexResource()
+    {
+        return Mage::getResourceSingleton('integernet_varnish/index');
     }
 }

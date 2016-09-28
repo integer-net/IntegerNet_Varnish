@@ -9,7 +9,11 @@
  */
 
 
-require_once 'abstract.php';
+if (strpos(__FILE__, '.modman')) {
+    require_once __DIR__ . '/../../../../src/shell/abstract.php';
+} else {
+    require_once 'abstract.php';
+}
 
 
 /**
@@ -20,43 +24,60 @@ class IntegerNet_Varnish extends Mage_Shell_Abstract
 
 
     /**
-     * Run script
      *
      */
     public function run()
     {
-        if ($purge = $this->getArg('purge')) {
+        if ($this->getArg('purge-url')) {
 
-            if ($purge == 'all') {
+            /** @var IntegerNet_Varnish_Model_Index_Purge $purge */
+            $purge = Mage::getSingleton('integernet_varnish/index_purge');
+            $purge->purgeUrl($this->getArg('purge-url'));
 
-                Mage::getSingleton('integernet_varnish/index_purge')->purgeAll();
+        } elseif ($this->getArg('purge-all')) {
 
-            } else {
+            /** @var IntegerNet_Varnish_Model_Index_Purge $purge */
+            $purge = Mage::getSingleton('integernet_varnish/index_purge');
+            $purge->purgeAll();
 
-                Mage::getSingleton('integernet_varnish/index_purge')->purgeUrl($purge);
-            }
-        } elseif ($this->getArg('reboot')) {
+        } elseif ($this->getArg('build')) {
 
-            Mage::getSingleton('integernet_varnish/index_build_shell')->deleteJobFiles();
-            Mage::getSingleton('integernet_varnish/index_purge')->purgeAll();
+            /** @var IntegerNet_Varnish_Model_Index_Build $build */
+            $build = Mage::getSingleton('integernet_varnish/index_build');
+            $build->build();
+
+        } elseif ($this->getArg('build-shell-export')) {
+
+            /** @var IntegerNet_Varnish_Model_Index_Build_Shell $build */
+            $build = Mage::getModel('integernet_varnish/index_build_shell');
+            $build->writeShellBuildUrls();
+
+        } elseif ($this->getArg('build-shell-export-all')) {
+
+            /** @var IntegerNet_Varnish_Model_Index_Build_Shell $build */
+            $build = Mage::getModel('integernet_varnish/index_build_shell');
+            $build->writeAllShellBuildUrls();
 
         } else {
+
             echo $this->usageHelp();
         }
     }
 
 
     /**
-     * Retrieve Usage Help Message
-     *
+     * @return string
      */
     public function usageHelp()
     {
         return <<<USAGE
 Usage:  php -f integernet_varnish.php -- [options]
 
-  --purge all|<url>             Show Indexer(s) Status
-  help                          This help
+  --purge-url <url>           Purge single URL
+  --purge-all                 Purge all URLs
+  --build-shell-export        Export expired URLs for shell warmer
+  --build-shell-export-all    Export all URLs for shell warmer
+    help                      This help
 
 USAGE;
     }
